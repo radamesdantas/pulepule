@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -23,11 +23,8 @@ export default function SubmitMissionPage({ params }: Props) {
   const [error, setError] = useState('')
   const [missionId, setMissionId] = useState<string | null>(null)
   const [mission, setMission] = useState<{ title: string; description: string; context: string; xp_reward: number } | null>(null)
-  const [loaded, setLoaded] = useState(false)
 
-  // Carrega a missão no mount
-  if (!loaded) {
-    setLoaded(true)
+  useEffect(() => {
     params.then(async ({ id }) => {
       setMissionId(id)
       const supabase = createClient()
@@ -38,7 +35,7 @@ export default function SubmitMissionPage({ params }: Props) {
         .single()
       if (data) setMission(data as { title: string; description: string; context: string; xp_reward: number })
     })
-  }
+  }, [params])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

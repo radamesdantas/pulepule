@@ -1,0 +1,93 @@
+name: pulepule-squad
+version: "1.0.0"
+description: Squad especializado para o projeto Pule Pule — plataforma gamificada de liderança para adolescentes
+author: Synkra AIOX
+created_at: "2026-03-24"
+
+project:
+  name: Pule Pule
+  type: fullstack-web
+  stack:
+    frontend: Next.js 15 + React 19 + TypeScript + Tailwind CSS 4
+    backend: Supabase (PostgreSQL + Auth + RLS + Edge Functions)
+    deploy: Netlify
+  url: https://pulepule.netlify.app
+  repo: local (git init)
+
+agents:
+  lead: dev
+  members:
+    - id: dev
+      role: Implementação de features, bugfixes, rotas API
+    - id: data-engineer
+      role: Migrações Supabase, funções PL/pgSQL, RLS policies
+    - id: qa
+      role: Validação de fluxos, testes end-to-end, quality gates
+    - id: ux-design-expert
+      role: Consistência visual, acessibilidade, mobile-first
+    - id: devops
+      role: Deploy Netlify, variáveis de ambiente, git push
+
+tasks:
+  - id: verify-env-vars
+    agent: devops
+    priority: critical
+    description: Verificar se todas as env vars estão configuradas no Netlify
+  - id: implement-missing-features
+    agent: dev
+    priority: high
+    description: Features identificadas como incompletas na análise
+  - id: supabase-rls-audit
+    agent: data-engineer
+    priority: high
+    description: Auditoria de RLS policies para garantir segurança dos dados
+  - id: ui-consistency-audit
+    agent: ux-design-expert
+    priority: medium
+    description: Auditoria de consistência visual e responsividade mobile
+  - id: e2e-flow-validation
+    agent: qa
+    priority: high
+    description: Validar todos os fluxos críticos (signup, missão, aprovação)
+
+workflows:
+  - id: feature-completion
+    steps: [dev, qa, devops]
+    description: Implementar → Validar → Deploy
+  - id: db-change
+    steps: [data-engineer, qa, devops]
+    description: Migration → Testar → Deploy
+
+tech_context:
+  auth: Supabase Auth (email/password, roles: teen|parent|mentor)
+  database_tables:
+    - profiles
+    - competencies
+    - missions
+    - teen_missions
+    - teen_xp
+    - parent_teen
+    - notifications
+    - daily_checkins
+  db_functions:
+    - daily_checkin(p_teen_id)
+    - check_phase_advancement()
+    - notify_mission_update()
+    - award_badges(p_teen_id, p_total_xp, p_missions_approved)
+    - handle_new_user()
+  gamification:
+    xp_per_level: 500
+    phases: 4
+    missions_to_advance_phase: 8
+    total_missions: 48
+    total_competencies: 24
+  roles:
+    teen:
+      dashboard: /teen
+      features: [missions, journey, competencies, leaderboard, notifications]
+    parent:
+      dashboard: /parent
+      features: [link-teen, approve-missions, view-teen-stats]
+    mentor:
+      dashboard: /mentor
+      features: [validation-queue, approve, reject-with-feedback]

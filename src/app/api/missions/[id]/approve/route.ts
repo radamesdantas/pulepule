@@ -16,13 +16,15 @@ export async function POST(
     return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })
   }
 
-  const { error } = await supabase
+  // RLS garante que parent só atualiza missões dos seus teens
+  // count: 'exact' permite verificar se o update realmente afetou linhas
+  const { count, error } = await supabase
     .from('teen_missions')
-    .update({ parent_approved: true })
+    .update({ parent_approved: true }, { count: 'exact' })
     .eq('id', teenMissionId)
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error || count === 0) {
+    return NextResponse.json({ error: 'Missão não encontrada ou não autorizado' }, { status: 404 })
   }
 
   return NextResponse.redirect(new URL('/parent', req.url))
