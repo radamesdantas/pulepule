@@ -12,21 +12,47 @@ project:
     backend: Supabase (PostgreSQL + Auth + RLS + Edge Functions)
     deploy: Netlify
   url: https://pulepule.netlify.app
-  repo: local (git init)
+  repo: https://github.com/radamesdantas/pulepule
 
 agents:
   lead: dev
-  members:
+  # --- Tech Agents ---
+  tech:
     - id: dev
-      role: Implementação de features, bugfixes, rotas API
+      persona: Dex
+      role: Implementação de features, bugfixes, rotas API Next.js
     - id: data-engineer
-      role: Migrações Supabase, funções PL/pgSQL, RLS policies
+      persona: Dara
+      role: Migrações Supabase, funções PL/pgSQL, RLS policies, triggers
     - id: qa
+      persona: Quinn
       role: Validação de fluxos, testes end-to-end, quality gates
     - id: ux-design-expert
-      role: Consistência visual, acessibilidade, mobile-first
+      persona: Uma
+      role: Consistência visual, acessibilidade, mobile-first, design system
     - id: devops
-      role: Deploy Netlify, variáveis de ambiente, git push
+      persona: Gage
+      role: Deploy Netlify, variáveis de ambiente, git push (EXCLUSIVO)
+  # --- Consultant Agents ---
+  consultants:
+    - id: architect
+      persona: Aria
+      role: Decisões de arquitetura, seleção de tecnologia, padrões de integração
+    - id: pm
+      persona: Morgan
+      role: Product Management, criação de épicos, especificações, roadmap
+    - id: po
+      persona: Pax
+      role: Product Owner, validação de stories, backlog, critérios de aceite
+    - id: sm
+      persona: River
+      role: Scrum Master, criação de stories a partir de épicos e PRDs
+    - id: analyst
+      persona: Alex
+      role: Pesquisa, análise de dados, métricas de engajamento, benchmarks
+    - id: aiox-master
+      persona: Synkra
+      role: Governança do framework, override de limites, Constitutional enforcement
 
 tasks:
   - id: verify-env-vars
