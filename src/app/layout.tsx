@@ -6,6 +6,7 @@ const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://pulepule.netlify.app'),
   title: 'Pule Pule — Pule do ninho e faça seu voo!',
   description:
     'Plataforma gamificada de liderança para jovens líderes. Pulos e voos para desenvolver autonomia, liderança e caráter.',

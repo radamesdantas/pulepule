@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/', '/auth/login', '/auth/signup']
+const PUBLIC_PATHS = ['/', '/auth/login', '/auth/signup', '/auth/reset-password', '/auth/update-password', '/auth/callback']
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -28,17 +28,26 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const isPublic = PUBLIC_PATHS.some(p => request.nextUrl.pathname === p || request.nextUrl.pathname.startsWith('/auth/'))
+  const pathname = request.nextUrl.pathname
+  const isPublic = PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith('/auth/'))
 
+  // Não autenticado tentando acessar rota protegida
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  if (user && (request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/signup')) {
-    // Redireciona para onboarding se nunca fez, senão para o dashboard do papel
+  // Autenticado tentando acessar login/signup → redireciona para dashboard
+  if (user && (pathname === '/auth/login' || pathname === '/auth/signup')) {
     const onboarded = user.user_metadata?.onboarded
     const role = user.user_metadata?.role ?? 'teen'
     if (!onboarded) return NextResponse.redirect(new URL('/onboarding', request.url))
+    const dest = role === 'parent' ? '/parent' : role === 'mentor' ? '/mentor' : '/teen'
+    return NextResponse.redirect(new URL(dest, request.url))
+  }
+
+  // Autenticado já fez onboarding, tentando acessar /onboarding novamente
+  if (user && pathname === '/onboarding' && user.user_metadata?.onboarded) {
+    const role = user.user_metadata?.role ?? 'teen'
     const dest = role === 'parent' ? '/parent' : role === 'mentor' ? '/mentor' : '/teen'
     return NextResponse.redirect(new URL(dest, request.url))
   }
