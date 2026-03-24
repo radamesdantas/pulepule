@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-teen-purple: #8b5cf6;
+  --color-parent-blue: #3b82f6;
+  --color-parent-blue-dark: #2563eb;
+  --color-xp-gold: #f59e0b;
+  --color-level-up: #10b981;
+  --font-outfit: "Outfit", "Outfit Fallback";
+  --font-inter: "Inter", "Inter Fallback";
+}
+
+@keyframes eagle-jump {
+  0%   { transform: translateY(0) scaleY(1); }
+  30%  { transform: translateY(-18px) scaleY(1.05); }
+  60%  { transform: translateY(-10px) scaleY(1.02); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+
+@keyframes eagle-shadow {
+  0%   { transform: scaleX(1); opacity: 0.18; }
+  30%  { transform: scaleX(0.6); opacity: 0.08; }
+  60%  { transform: scaleX(0.75); opacity: 0.12; }
+  100% { transform: scaleX(1); opacity: 0.18; }
+}
+
+@keyframes eagle-wing-l {
+  0%   { transform: rotate(0deg); }
+  30%  { transform: rotate(-25deg); }
+  60%  { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes eagle-wing-r {
+  0%   { transform: rotate(0deg); }
+  30%  { transform: rotate(25deg); }
+  60%  { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes eagle-tail {
+  0%   { transform: scaleY(1); }
+  30%  { transform: scaleY(0.8); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes eagle-blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.1); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out both;
+}

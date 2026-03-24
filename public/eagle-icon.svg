@@ -1,0 +1,67 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+
+  <!-- Left wing -->
+  <path d="M156 280 C90 240 50 170 80 110 C95 82 125 92 145 118 C158 136 160 200 156 280Z" fill="#6C4FD4"/>
+  <path d="M156 280 C100 252 72 196 98 148 C110 126 132 134 148 158 C154 170 156 220 156 280Z" fill="#8B72F0"/>
+
+  <!-- Right wing -->
+  <path d="M356 280 C422 240 462 170 432 110 C417 82 387 92 367 118 C354 136 352 200 356 280Z" fill="#6C4FD4"/>
+  <path d="M356 280 C412 252 440 196 414 148 C402 126 380 134 364 158 C358 170 356 220 356 280Z" fill="#8B72F0"/>
+
+  <!-- Tail -->
+  <path d="M210 390 L256 460 L302 390Z" fill="#5A3EC8"/>
+  <path d="M186 378 L235 440 L256 390Z" fill="#6C4FD4"/>
+  <path d="M326 378 L277 440 L256 390Z" fill="#6C4FD4"/>
+
+  <!-- Body -->
+  <ellipse cx="256" cy="310" rx="96" ry="106" fill="#4F3CC9"/>
+
+  <!-- Belly -->
+  <ellipse cx="256" cy="344" rx="60" ry="68" fill="#EDE9FF"/>
+
+  <!-- Star badge -->
+  <polygon points="256,298 267,322 292,322 272,337 280,361 256,346 232,361 240,337 220,322 245,322" fill="#F7B731"/>
+
+  <!-- Head -->
+  <circle cx="256" cy="188" r="84" fill="#4F3CC9"/>
+  <ellipse cx="256" cy="188" rx="64" ry="62" fill="white"/>
+
+  <!-- Crown feathers -->
+  <path d="M220 126 L208 72 L232 118" fill="#7B61FF"/>
+  <path d="M256 118 L256 58 L270 112" fill="#4F3CC9"/>
+  <path d="M292 126 L304 72 L280 118" fill="#7B61FF"/>
+  <path d="M236 122 L228 80 L248 116" fill="#9B8AFF"/>
+  <path d="M276 122 L284 80 L264 116" fill="#9B8AFF"/>
+
+  <!-- Eyes -->
+  <circle cx="228" cy="175" r="22" fill="#1A1A2E"/>
+  <circle cx="284" cy="175" r="22" fill="#1A1A2E"/>
+  <circle cx="235" cy="167" r="8" fill="white"/>
+  <circle cx="291" cy="167" r="8" fill="white"/>
+
+  <!-- Beak -->
+  <path d="M232 202 L256 202 L280 202 L256 238Z" fill="#F7B731"/>
+  <path d="M232 202 L256 218 L280 202 L256 202Z" fill="#E6A800"/>
+
+  <!-- Cheek blush -->
+  <ellipse cx="200" cy="186" rx="18" ry="11" fill="#FF9BAD" opacity="0.5"/>
+  <ellipse cx="312" cy="186" rx="18" ry="11" fill="#FF9BAD" opacity="0.5"/>
+
+  <!-- Talons -->
+  <path d="M210 416 C194 434 186 448 178 458" stroke="#F7B731" stroke-width="14" stroke-linecap="round"/>
+  <path d="M218 420 C210 440 206 454 202 464" stroke="#F7B731" stroke-width="14" stroke-linecap="round"/>
+  <path d="M228 422 L228 466" stroke="#F7B731" stroke-width="14" stroke-linecap="round"/>
+
+  <path d="M302 416 C318 434 326 448 334 458" stroke="#F7B731" stroke-width="14" stroke-linecap="round"/>
+  <path d="M294 420 C302 440 306 454 310 464" stroke="#F7B731" stroke-width="14" stroke-linecap="round"/>
+  <path d="M284 422 L284 466" stroke="#F7B731" stroke-width="14" stroke-linecap="round"/>
+
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </radialGradient>
+  </defs>
+</svg>
