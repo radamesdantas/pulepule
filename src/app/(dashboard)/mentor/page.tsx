@@ -15,7 +15,8 @@ export default async function MentorDashboard() {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  if (!profile || profile.role !== 'mentor') redirect('/auth/login')
+  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+  if (role !== 'mentor') redirect('/auth/login')
 
   const { data: submitted } = await supabase
     .from('teen_missions')
@@ -45,7 +46,7 @@ export default async function MentorDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-gray-800" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          Olá, {profile.name} 🌟
+          Olá, {profile?.name ?? user.user_metadata?.name ?? 'Usuário'} 🌟
         </h1>
         <p className="text-gray-500 text-sm mt-1">Valide as entregas dos adolescentes</p>
       </div>

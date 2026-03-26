@@ -16,7 +16,8 @@ export default async function LeaderboardPage() {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (!profile || profile.role !== 'teen') redirect('/teen')
+  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+  if (role !== 'teen') redirect('/teen')
 
   // Busca todos teens com XP
   const { data: xpList } = await supabase

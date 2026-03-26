@@ -22,7 +22,9 @@ export default async function TeenDashboard() {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  if (!profile || profile.role !== 'teen') redirect('/auth/login')
+  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+  const name = profile?.name ?? user.user_metadata?.name ?? user.email?.split('@')[0] ?? 'Usuário'
+  if (role !== 'teen') redirect('/auth/login')
 
   const { data: xp } = await supabase.from('teen_xp').select('*').eq('teen_id', user.id).single()
 
@@ -60,7 +62,7 @@ export default async function TeenDashboard() {
       <div className="bg-gradient-to-r from-teen-purple to-parent-blue rounded-3xl p-6 text-white">
         <p className="text-white/70 text-sm">Olá,</p>
         <h1 className="text-3xl font-black" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          {profile.name} 👋
+          {name} 👋
         </h1>
         <p className="text-white/80 text-sm mt-1">Fase {phase} — {PHASE_LABELS[phase]}</p>
 

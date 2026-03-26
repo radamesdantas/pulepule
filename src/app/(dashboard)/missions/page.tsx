@@ -31,7 +31,8 @@ export default async function MissionsPage({ searchParams }: Props) {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (!profile || profile.role !== 'teen') redirect('/teen')
+  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+  if (role !== 'teen') redirect('/teen')
 
   const { data: xp } = await supabase.from('teen_xp').select('current_phase').eq('teen_id', user.id).single()
   const currentPhase = xp?.current_phase ?? 1

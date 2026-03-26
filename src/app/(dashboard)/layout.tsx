@@ -18,21 +18,32 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
-  // Se o profile não existe, cria a partir dos metadados do auth
+  // Se o profile não existe, tenta criar; se RLS bloquear, usa fallback em memória
   if (!profile) {
     const meta = user.user_metadata ?? {}
+    const fallbackName = meta.name ?? user.email?.split('@')[0] ?? 'Usuário'
+    const fallbackRole = meta.role ?? 'teen'
+
     const { data: created } = await supabase
       .from('profiles')
       .upsert({
         id: user.id,
         email: user.email,
-        name: meta.name ?? user.email?.split('@')[0] ?? 'Usuário',
-        role: meta.role ?? 'teen',
+        name: fallbackName,
+        role: fallbackRole,
       }, { onConflict: 'id' })
       .select('*')
       .single()
-    profile = created
-    if (!profile) redirect('/auth/login')
+
+    profile = created ?? {
+      id: user.id,
+      email: user.email ?? '',
+      name: fallbackName,
+      role: fallbackRole,
+      avatar_url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
   }
 
   // Conta notificações não lidas

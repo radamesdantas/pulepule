@@ -8,7 +8,8 @@ export default async function ParentDashboard() {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  if (!profile || profile.role !== 'parent') redirect('/auth/login')
+  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+  if (role !== 'parent') redirect('/auth/login')
 
   // Busca teens vinculados
   const { data: links } = await supabase
@@ -40,7 +41,7 @@ export default async function ParentDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-gray-800" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          Olá, {profile.name} 👋
+          Olá, {profile?.name ?? user.user_metadata?.name ?? 'Usuário'} 👋
         </h1>
         <p className="text-gray-500 text-sm mt-1">Acompanhe o desenvolvimento dos seus teens</p>
       </div>

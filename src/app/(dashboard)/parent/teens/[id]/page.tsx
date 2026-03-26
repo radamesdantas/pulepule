@@ -28,7 +28,8 @@ export default async function ParentTeenDetailPage({ params }: Props) {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (!profile || profile.role !== 'parent') redirect('/auth/login')
+  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+  if (role !== 'parent') redirect('/auth/login')
 
   // Verifica vínculo pai-teen
   const { data: link } = await supabase

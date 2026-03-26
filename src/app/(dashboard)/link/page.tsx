@@ -8,7 +8,8 @@ export default async function LinkPage() {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  if (!profile || profile.role !== 'parent') redirect('/parent')
+  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+  if (role !== 'parent') redirect('/parent')
 
   // Teen ID do pai é o próprio código de convite
   const { data: links } = await supabase
