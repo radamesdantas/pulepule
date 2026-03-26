@@ -109,7 +109,7 @@ export default function DashboardNav({ profile }: Props) {
               {profile.name?.[0]?.toUpperCase()}
             </div>
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-gray-800 leading-tight">{profile.name.split(' ')[0]}</p>
+              <p className="text-sm font-bold text-gray-800 leading-tight">{(profile.name ?? '').split(' ')[0]}</p>
               <p className="text-[10px] text-gray-400">{profile.role === 'teen' ? 'Adolescente' : profile.role === 'parent' ? 'Pai/Mãe' : 'Mentor'}</p>
             </div>
           </Link>

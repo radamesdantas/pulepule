@@ -12,13 +12,28 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  if (!profile) redirect('/auth/login')
+  // Se o profile não existe, cria a partir dos metadados do auth
+  if (!profile) {
+    const meta = user.user_metadata ?? {}
+    const { data: created } = await supabase
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        email: user.email,
+        name: meta.name ?? user.email?.split('@')[0] ?? 'Usuário',
+        role: meta.role ?? 'teen',
+      }, { onConflict: 'id' })
+      .select('*')
+      .single()
+    profile = created
+    if (!profile) redirect('/auth/login')
+  }
 
   // Conta notificações não lidas
   const { count: unread } = await supabase
