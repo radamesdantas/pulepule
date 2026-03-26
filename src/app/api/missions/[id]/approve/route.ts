@@ -27,5 +27,5 @@ export async function POST(
     return NextResponse.json({ error: 'Missão não encontrada ou não autorizado' }, { status: 404 })
   }
 
-  return NextResponse.redirect(new URL('/parent', req.url))
+  return NextResponse.redirect(new URL('/parent', req.url), 303)
 }

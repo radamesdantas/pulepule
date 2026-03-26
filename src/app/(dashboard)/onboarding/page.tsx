@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import EagleMascot from '@/components/EagleMascot'
@@ -81,7 +81,7 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(true)
 
   // Carrega o papel do usuário
-  if (loading) {
+  useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
@@ -90,7 +90,7 @@ export default function OnboardingPage() {
         setLoading(false)
       })
     })
-  }
+  }, [router])
 
   const steps = role === 'parent' ? STEPS_PARENT : role === 'mentor' ? STEPS_MENTOR : STEPS_TEEN
   const current = steps[step]

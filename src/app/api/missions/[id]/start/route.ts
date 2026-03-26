@@ -23,5 +23,5 @@ export async function POST(
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.redirect(new URL('/missions', _req.url))
+  return NextResponse.redirect(new URL('/missions', _req.url), 303)
 }

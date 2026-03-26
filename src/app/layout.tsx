@@ -1,9 +1,16 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Outfit, Inter } from 'next/font/google'
 import './globals.css'
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://pulepule.netlify.app'),
@@ -33,7 +40,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${outfit.variable} ${inter.variable}`}>
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       <body className="antialiased" style={{ fontFamily: 'Inter, sans-serif' }}>
         {children}
       </body>

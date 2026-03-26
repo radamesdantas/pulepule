@@ -28,5 +28,5 @@ export async function POST(
     })
     .eq('id', teenMissionId)
 
-  return NextResponse.redirect(new URL('/mentor', req.url))
+  return NextResponse.redirect(new URL('/mentor', req.url), 303)
 }

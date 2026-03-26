@@ -57,5 +57,5 @@ export async function POST(
       .eq('teen_id', tm.teen_id)
   }
 
-  return NextResponse.redirect(new URL('/mentor', req.url))
+  return NextResponse.redirect(new URL('/mentor', req.url), 303)
 }
