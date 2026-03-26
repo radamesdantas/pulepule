@@ -1,9 +1,7 @@
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import DashboardNav from '@/components/DashboardNav'
-import MobileNav from '@/components/MobileNav'
-import CheckinTrigger from '@/components/CheckinTrigger'
+import Sidebar from '@/components/Sidebar'
 import Toast from '@/components/Toast'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -18,7 +16,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
-  // Se o profile não existe, tenta criar; se RLS bloquear, usa fallback em memória
   if (!profile) {
     const meta = user.user_metadata ?? {}
     const fallbackName = meta.name ?? user.email?.split('@')[0] ?? 'Usuário'
@@ -46,7 +43,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  // Conta notificações não lidas
   const { count: unread } = await supabase
     .from('notifications')
     .select('id', { count: 'exact', head: true })
@@ -54,14 +50,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('read', false)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardNav profile={profile} />
-      {/* Checkin diário silencioso para teens */}
-      {profile.role === 'teen' && <CheckinTrigger teenId={user.id} />}
-      <main className="max-w-5xl mx-auto px-4 py-6 pb-24 sm:pb-8">
+    <div className="min-h-screen bg-gray-950">
+      <Sidebar role={profile.role} name={profile.name} unread={unread ?? 0} />
+      <main className="md:ml-56 min-h-screen pb-20 md:pb-8">
         {children}
       </main>
-      <MobileNav profile={profile} unread={unread ?? 0} />
       <Suspense><Toast /></Suspense>
     </div>
   )
