@@ -85,10 +85,9 @@ export default function OnboardingPage() {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
-      supabase.from('profiles').select('role').eq('id', user.id).single().then(({ data }) => {
-        setRole(data?.role ?? 'teen')
-        setLoading(false)
-      })
+      const metaRole = user.user_metadata?.role ?? 'teen'
+      setRole(metaRole)
+      setLoading(false)
     })
   }, [router])
 
@@ -96,16 +95,47 @@ export default function OnboardingPage() {
   const current = steps[step]
   const isLast = step === steps.length - 1
 
+  async function completeOnboarding() {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const userRole = user.user_metadata?.role ?? 'teen'
+    const userName = user.user_metadata?.name ?? user.email?.split('@')[0] ?? 'Usuário'
+
+    // Garante que o profile existe antes de navegar para o dashboard
+    await supabase.from('profiles').upsert({
+      id: user.id,
+      email: user.email,
+      name: userName,
+      role: userRole,
+    }, { onConflict: 'id' })
+
+    // Cria registro de XP para teens
+    if (userRole === 'teen') {
+      await supabase.from('teen_xp').upsert({
+        teen_id: user.id,
+        total_xp: 0,
+        current_level: 1,
+        current_streak: 0,
+        max_streak: 0,
+        badges: [],
+        current_phase: 1,
+        autonomy_index: 0,
+      }, { onConflict: 'teen_id' })
+    }
+
+    // Marca onboarding como completo
+    await supabase.auth.updateUser({ data: { onboarded: true } })
+
+    const dest = userRole === 'parent' ? '/link' : userRole === 'mentor' ? '/mentor' : '/teen'
+    router.push(dest)
+    router.refresh()
+  }
+
   async function handleNext() {
     if (isLast) {
-      // Marca onboarding como completo no metadata
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        await supabase.auth.updateUser({ data: { onboarded: true } })
-      }
-      const dest = role === 'parent' ? '/link' : role === 'mentor' ? '/mentor' : '/teen'
-      router.push(dest)
+      await completeOnboarding()
     } else {
       setStep(s => s + 1)
     }
@@ -157,13 +187,7 @@ export default function OnboardingPage() {
 
         {!isLast && (
           <button
-            onClick={() => {
-              const supabase = createClient()
-              supabase.auth.updateUser({ data: { onboarded: true } }).then(() => {
-                const dest = role === 'parent' ? '/parent' : role === 'mentor' ? '/mentor' : '/teen'
-                router.push(dest)
-              })
-            }}
+            onClick={completeOnboarding}
             className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition-colors"
           >
             Pular introdução
