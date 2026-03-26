@@ -20,7 +20,7 @@ export default async function MentorDashboard() {
 
   const { data: submitted } = await supabase
     .from('teen_missions')
-    .select('id, evidence_description, mission:missions(title, xp_reward, context), teen:profiles(name)')
+    .select('id, evidence_description, evidence_url, mission:missions(title, xp_reward, context), teen:profiles(name)')
     .eq('status', 'submitted')
     .order('created_at', { ascending: true })
 
@@ -98,10 +98,27 @@ export default async function MentorDashboard() {
                     <span className="text-sm font-bold text-xp-gold shrink-0">+{mission?.xp_reward} XP</span>
                   </div>
 
-                  {tm.evidence_description && (
-                    <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                      <p className="text-xs text-gray-500 font-semibold mb-1">Entrega do teen:</p>
-                      <p className="text-sm text-gray-700 leading-relaxed">{tm.evidence_description}</p>
+                  {(tm.evidence_description || tm.evidence_url) && (
+                    <div className="bg-gray-50 rounded-xl p-3 mb-4 space-y-2">
+                      {tm.evidence_description && (
+                        <>
+                          <p className="text-xs text-gray-500 font-semibold">Entrega do teen:</p>
+                          <p className="text-sm text-gray-700 leading-relaxed">{tm.evidence_description}</p>
+                        </>
+                      )}
+                      {tm.evidence_url && (
+                        <div className="flex items-center gap-2 pt-1">
+                          <span className="text-sm">📎</span>
+                          <a
+                            href={tm.evidence_url as string}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-teen-purple font-semibold hover:underline truncate"
+                          >
+                            Ver arquivo anexado →
+                          </a>
+                        </div>
+                      )}
                     </div>
                   )}
 
