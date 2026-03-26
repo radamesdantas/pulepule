@@ -86,17 +86,26 @@ export default async function MissionsPage({ searchParams }: Props) {
 
       {filteredMissions.length > 0 ? (
         <div className="grid gap-4">
-          {filteredMissions.map((mission) => {
+          {filteredMissions.map((mission, index) => {
             const progress = progressMap.get(mission.id)
             const status = progress?.status ?? 'pending'
             const s = STATUS_MAP[status]
             const comp = mission.competency as { name: string; icon: string } | null
 
+            // Desbloqueio sequencial: só libera se for a primeira OU a anterior já foi aprovada
+            const sortedAll = allMissions ?? []
+            const missionIndex = sortedAll.findIndex(m => m.id === mission.id)
+            const prevMission = missionIndex > 0 ? sortedAll[missionIndex - 1] : null
+            const prevStatus = prevMission ? (progressMap.get(prevMission.id)?.status ?? 'pending') : 'approved'
+            const isLocked = status === 'pending' && prevStatus !== 'approved'
+
             return (
               <div
                 key={mission.id}
                 className={`bg-white rounded-2xl p-5 shadow-sm border transition-all ${
-                  status === 'approved' ? 'border-green-200 opacity-80' : 'border-gray-100 hover:border-teen-purple/20 hover:shadow-md'
+                  isLocked ? 'border-gray-100 opacity-50' :
+                  status === 'approved' ? 'border-green-200 opacity-80' :
+                  'border-gray-100 hover:border-teen-purple/20 hover:shadow-md'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -105,8 +114,9 @@ export default async function MissionsPage({ searchParams }: Props) {
                       <span className="text-sm">{CONTEXT_LABELS[mission.context]}</span>
                       <span className="text-gray-300">·</span>
                       <span className="text-xs text-gray-400">Mês {mission.month}</span>
+                      {isLocked && <span className="text-xs">🔒</span>}
                     </div>
-                    <h3 className="font-black text-gray-800 text-lg leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                    <h3 className={`font-black text-lg leading-tight ${isLocked ? 'text-gray-400' : 'text-gray-800'}`} style={{ fontFamily: 'Outfit, sans-serif' }}>
                       {mission.title}
                     </h3>
                     <p className="text-gray-500 text-sm mt-1 leading-relaxed">{mission.description}</p>
@@ -120,25 +130,31 @@ export default async function MissionsPage({ searchParams }: Props) {
                   </div>
 
                   <div className="flex flex-col items-end gap-2 shrink-0">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${s.color}`}>
-                      {s.label}
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${isLocked ? 'bg-gray-100 text-gray-400' : s.color}`}>
+                      {isLocked ? '🔒 Bloqueada' : s.label}
                     </span>
                     <span className="text-xs font-bold text-xp-gold">+{mission.xp_reward} XP</span>
                   </div>
                 </div>
 
-                {status === 'rejected' && progress?.mentor_feedback && (
+                {isLocked && (
+                  <div className="mt-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-xs text-gray-400 font-semibold">
+                    🔒 Complete a missão anterior para desbloquear
+                  </div>
+                )}
+
+                {!isLocked && status === 'rejected' && progress?.mentor_feedback && (
                   <div className="mt-3 bg-red-50 border border-red-100 rounded-xl p-3">
                     <p className="text-xs text-red-600 font-semibold">Feedback do mentor:</p>
                     <p className="text-xs text-red-500 mt-0.5">{progress.mentor_feedback}</p>
                   </div>
                 )}
 
-                {(status === 'pending' || status === 'in_progress' || status === 'rejected') && (
+                {!isLocked && (status === 'pending' || status === 'in_progress' || status === 'rejected') && (
                   <MissionActions missionId={mission.id} teenId={user.id} status={status} />
                 )}
 
-                {status === 'submitted' && (
+                {!isLocked && status === 'submitted' && (
                   <div className="mt-3 bg-yellow-50 border border-yellow-100 rounded-xl px-4 py-2 text-xs text-yellow-700 font-semibold">
                     ⏳ Aguardando avaliação do mentor
                   </div>
