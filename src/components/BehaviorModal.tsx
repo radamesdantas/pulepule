@@ -32,8 +32,11 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [localStatus, setLocalStatus] = useState<string | null>(null)
 
   if (!behavior) return null
+
+  const currentStatus = (localStatus ?? behavior.status) as 'locked' | 'available' | 'in_progress' | 'completed'
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -63,6 +66,7 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
       status: 'in_progress',
     }, { onConflict: 'teen_id,mission_id' })
     setLoading(false)
+    setLocalStatus('in_progress')
     onRefresh()
   }
 
@@ -140,17 +144,17 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
 
             {/* 3. Baú de XP */}
             <div className="bg-xp-gold/10 rounded-2xl p-4 border border-xp-gold/20 text-center">
-              <span className="text-4xl">{behavior.status === 'completed' ? '✅' : '🎁'}</span>
+              <span className="text-4xl">{currentStatus === 'completed' ? '✅' : '🎁'}</span>
               <p className="text-xp-gold font-black text-2xl mt-1" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                {behavior.status === 'completed' ? 'XP coletado!' : `+${behavior.xpReward} XP`}
+                {currentStatus === 'completed' ? 'XP coletado!' : `+${behavior.xpReward} XP`}
               </p>
               <p className="text-gray-400 text-xs mt-1">
-                {behavior.status === 'completed' ? 'Parabéns pela conquista!' : 'Ganhe XP ao completar'}
+                {currentStatus === 'completed' ? 'Parabéns pela conquista!' : 'Ganhe XP ao completar'}
               </p>
             </div>
 
             {/* 4. Evidência */}
-            {behavior.status === 'in_progress' && (
+            {currentStatus === 'in_progress' && (
               <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">📸</span>
@@ -181,7 +185,7 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
               </div>
             )}
 
-            {behavior.status === 'completed' && behavior.evidenceUrl && (
+            {currentStatus === 'completed' && behavior.evidenceUrl && (
               <div className="bg-level-up/10 rounded-2xl p-4 border border-level-up/20">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">✅</span>
@@ -202,7 +206,7 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
 
             {/* 5. Action button */}
             <div className="pt-2">
-              {behavior.status === 'available' && (
+              {currentStatus === 'available' && (
                 <button
                   onClick={handleStart}
                   disabled={loading}
@@ -211,7 +215,7 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
                   {loading ? '...' : 'Iniciar Comportamento 🚀'}
                 </button>
               )}
-              {behavior.status === 'in_progress' && (
+              {currentStatus === 'in_progress' && (
                 <button
                   onClick={handleSubmitEvidence}
                   disabled={loading || description.trim().length < 20}
@@ -220,12 +224,12 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
                   {loading ? 'Enviando...' : 'Enviar Evidência 📤'}
                 </button>
               )}
-              {behavior.status === 'completed' && (
+              {currentStatus === 'completed' && (
                 <div className="text-center py-3">
                   <span className="bg-level-up/20 text-level-up font-bold text-sm px-6 py-2 rounded-full">Concluído ✓</span>
                 </div>
               )}
-              {behavior.status === 'locked' && (
+              {currentStatus === 'locked' && (
                 <p className="text-center text-gray-500 text-sm py-3">🔒 Complete o anterior para desbloquear</p>
               )}
             </div>
