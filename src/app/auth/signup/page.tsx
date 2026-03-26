@@ -54,21 +54,34 @@ export default function SignupPage() {
     }
 
     setSuccess(true)
-    setTimeout(() => router.push('/auth/login'), 3000)
   }
 
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teen-purple via-purple-600 to-parent-blue flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl p-10 shadow-2xl text-center max-w-md w-full">
-          <div className="text-6xl mb-4">🎉</div>
+          <div className="text-6xl mb-4">📧</div>
           <h2 className="text-2xl font-black text-gray-800 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Conta criada!
+            Quase lá!
           </h2>
-          <p className="text-gray-500 text-sm">
-            Verifique seu email para confirmar o cadastro.<br />
-            Redirecionando para o login...
+          <p className="text-gray-600 text-sm leading-relaxed mb-4">
+            Enviamos um link de confirmação para o seu email.<br />
+            <strong>Abra seu email e clique no link</strong> para ativar sua conta e começar a jornada!
           </p>
+          <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-sm text-purple-700 mb-4">
+            <p className="font-semibold mb-1">Não encontrou o email?</p>
+            <ul className="text-xs text-purple-600 space-y-0.5 text-left">
+              <li>• Verifique a pasta de <strong>spam</strong> ou <strong>lixo eletrônico</strong></li>
+              <li>• O email vem de <strong>noreply@mail.app.supabase.io</strong></li>
+              <li>• Pode levar até 2 minutos para chegar</li>
+            </ul>
+          </div>
+          <button
+            onClick={() => router.push('/auth/login')}
+            className="w-full bg-gradient-to-r from-teen-purple to-parent-blue text-white font-bold py-3 rounded-xl hover:opacity-90 transition-all"
+          >
+            Já confirmei, ir para Login →
+          </button>
         </div>
       </div>
     )
