@@ -10,6 +10,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-40 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4 py-3 relative flex items-center justify-center">
           <div className="flex items-center gap-1.5">
+            <EagleMascot width={34} height={40.8} animate={false} />
             <span className="font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-teen-purple to-parent-blue font-outfit">
               Pule Pule
             </span>
@@ -42,10 +43,6 @@ export default function Home() {
           <div className="relative max-w-6xl mx-auto px-4 py-24 w-full">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="text-white text-center lg:text-left">
-                <div className="flex justify-center mb-6 lg:hidden">
-                  <EagleMascot width={130} height={156} />
-                </div>
-
                 <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 mb-6 text-sm font-medium">
                   🦅 Plataforma de Liderança para Jovens Protagonistas
                 </div>
@@ -92,7 +89,6 @@ export default function Home() {
               </div>
 
               <div className="hidden lg:flex flex-col items-center gap-6">
-                <EagleMascot width={260} height={312} />
                 {/* Estatísticas */}
                 <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
                   {[
