@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import EagleMascot from '@/components/EagleMascot'
+import SplashScreen from '@/components/SplashScreen'
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-950 overflow-hidden">
+      <SplashScreen />
       {/* ── NAVBAR ─────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4 py-3 relative flex items-center justify-center">
@@ -519,8 +521,7 @@ export default function Home() {
       {/* ── CTA FINAL ──────────────────────────────────────────── */}
       <section className="py-24 bg-gradient-to-br from-teen-purple via-purple-600 to-parent-blue text-white text-center">
         <div className="max-w-2xl mx-auto px-4">
-          <EagleMascot width={90} height={108} />
-          <h2 className="text-4xl font-black mt-6 mb-4 tracking-display font-outfit">
+          <h2 className="text-4xl font-black mb-4 tracking-display font-outfit">
             Pronto para pular do ninho?
           </h2>
           <p className="text-white/80 text-lg mb-8">
