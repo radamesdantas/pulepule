@@ -124,12 +124,26 @@ export default async function ParentTeenDetailPage({ params }: Props) {
                 xp_reward: number
               } | null
               return (
-                <div
-                  key={tm.id}
-                  className="flex items-center justify-between bg-white rounded-xl px-4 py-2.5"
-                >
-                  <p className="text-sm font-semibold text-gray-800">{m?.title}</p>
-                  <span className="text-xs font-bold text-xp-gold">+{m?.xp_reward} XP</span>
+                <div key={tm.id} className="bg-white rounded-xl px-4 py-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-gray-800">{m?.title}</p>
+                    <span className="text-xs font-bold text-xp-gold">+{m?.xp_reward} XP</span>
+                  </div>
+                  {tm.evidence_description && (
+                    <p className="text-xs text-gray-500 italic">
+                      &ldquo;{tm.evidence_description}&rdquo;
+                    </p>
+                  )}
+                  {tm.evidence_url && (
+                    <a
+                      href={tm.evidence_url as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 font-bold text-xs px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      📎 Ver evidência
+                    </a>
+                  )}
                 </div>
               )
             })}
@@ -173,22 +187,34 @@ export default async function ParentTeenDetailPage({ params }: Props) {
               } | null
               const s = STATUS_MAP[tm.status] ?? STATUS_MAP.pending
               return (
-                <div key={tm.id} className="flex items-center justify-between px-5 py-3">
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">{m?.title}</p>
-                    <p className="text-xs text-gray-400">Mês {m?.month}</p>
-                    {tm.status === 'rejected' && tm.mentor_feedback && (
-                      <p className="text-xs text-red-500 mt-0.5">↩ {tm.mentor_feedback}</p>
-                    )}
+                <div key={tm.id} className="px-5 py-3 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-gray-800">{m?.title}</p>
+                      <p className="text-xs text-gray-400">Mês {m?.month}</p>
+                      {tm.status === 'rejected' && tm.mentor_feedback && (
+                        <p className="text-xs text-red-500 mt-0.5">↩ {tm.mentor_feedback}</p>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${s.color}`}>
+                        {s.label}
+                      </span>
+                      {tm.status === 'approved' && (
+                        <span className="text-xs font-bold text-xp-gold">+{m?.xp_reward} XP</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${s.color}`}>
-                      {s.label}
-                    </span>
-                    {tm.status === 'approved' && (
-                      <span className="text-xs font-bold text-xp-gold">+{m?.xp_reward} XP</span>
-                    )}
-                  </div>
+                  {tm.evidence_url && (
+                    <a
+                      href={tm.evidence_url as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      📎 Ver evidência
+                    </a>
+                  )}
                 </div>
               )
             })}

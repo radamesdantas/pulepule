@@ -121,17 +121,14 @@ export default async function MentorDashboard() {
                         </>
                       )}
                       {tm.evidence_url && (
-                        <div className="flex items-center gap-2 pt-1">
-                          <span className="text-sm">📎</span>
-                          <a
-                            href={tm.evidence_url as string}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-teen-purple font-semibold hover:underline truncate"
-                          >
-                            Ver arquivo anexado →
-                          </a>
-                        </div>
+                        <a
+                          href={tm.evidence_url as string}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 mt-2 bg-teen-purple/10 hover:bg-teen-purple/20 text-teen-purple font-bold text-sm px-4 py-2 rounded-xl transition-colors"
+                        >
+                          📎 Ver evidência anexada
+                        </a>
                       )}
                     </div>
                   )}
