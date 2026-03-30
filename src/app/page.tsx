@@ -56,8 +56,8 @@ export default function Home() {
                 </h1>
 
                 <p className="text-xl text-white/80 mb-8 max-w-lg mx-auto lg:mx-0">
-                  Jornada de <strong>12 meses</strong> que transforma adolescentes em líderes
-                  empreendedores — com gamificação, mentoria e missões reais.
+                  Jornada de <strong>12 meses</strong> que transforma jovens e adolescentes em
+                  líderes empreendedores — com gamificação, mentoria e missões reais.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
@@ -135,7 +135,7 @@ export default function Home() {
               {
                 icon: '🧭',
                 title: 'Mentores',
-                desc: 'Que querem impactar jovens com missões práticas, validação de entregas e crescimento mensurável.',
+                desc: 'Que querem impactar jovens e adolescentes com missões práticas, validação de entregas e crescimento mensurável.',
               },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="bg-gray-800 rounded-3xl p-6 border border-gray-700">
@@ -227,7 +227,7 @@ export default function Home() {
                 {
                   icon: '🎓',
                   title: 'Apresentação Final',
-                  desc: 'Cerimônia de 120 minutos celebrando a transformação completa do jovem líder.',
+                  desc: 'Cerimônia de 120 minutos celebrando a transformação completa do jovem e adolescente líder.',
                 },
               ]}
             />
@@ -246,7 +246,7 @@ export default function Home() {
               12 meses de transformação
             </h2>
             <p className="text-lg text-gray-400 max-w-xl mx-auto">
-              4 fases progressivas que levam o adolescente de 0% a 100% de autonomia real.
+              4 fases progressivas que levam o jovem e adolescente de 0% a 100% de autonomia real.
             </p>
           </div>
 
