@@ -46,7 +46,7 @@ export default function Home() {
                 </div>
 
                 <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 mb-6 text-sm font-medium">
-                  🦅 Plataforma de Liderança para Jovens de 12–15 anos
+                  🦅 Plataforma de Liderança para Jovens Protagonistas
                 </div>
 
                 <h1 className="text-5xl lg:text-6xl font-black leading-tight mb-6 tracking-display font-outfit">
@@ -124,7 +124,7 @@ export default function Home() {
             {[
               {
                 icon: '🧑‍🎓',
-                title: 'Adolescentes 12–15 anos',
+                title: 'Jovens Protagonistas',
                 desc: 'Que querem descobrir seu propósito, desenvolver liderança e sair do ninho com confiança.',
               },
               {

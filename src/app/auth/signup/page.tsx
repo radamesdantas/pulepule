@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import type { UserRole } from '@/lib/types/database'
 
 const ROLES: { value: UserRole; label: string; icon: string; desc: string }[] = [
-  { value: 'teen', label: 'Adolescente', icon: '🦅', desc: '12 a 15 anos' },
+  { value: 'teen', label: 'Adolescente', icon: '🦅', desc: 'Jovem protagonista' },
   { value: 'parent', label: 'Pai / Mãe', icon: '👨‍👩‍👦', desc: 'Acompanhe o progresso' },
   { value: 'mentor', label: 'Mentor', icon: '🌟', desc: 'Guie jovens líderes' },
 ]
