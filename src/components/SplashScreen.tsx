@@ -25,7 +25,6 @@ export default function SplashScreen() {
       }`}
     >
       <EagleMascot width={200} height={240} animate />
-      <p className="text-gray-500 text-sm mt-8 tracking-widest uppercase">preparando seu voo...</p>
     </div>
   )
 }

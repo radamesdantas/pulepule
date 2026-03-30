@@ -7,7 +7,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-950 overflow-hidden">
       <SplashScreen />
       {/* ── NAVBAR ─────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-4 py-3 relative flex items-center justify-center">
           <div className="flex items-center gap-1.5">
             <span className="font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-teen-purple to-parent-blue font-outfit">
