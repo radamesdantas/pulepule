@@ -84,7 +84,10 @@ export default function OnboardingPage() {
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push('/auth/login'); return }
+      if (!user) {
+        router.push('/auth/login')
+        return
+      }
       const metaRole = user.user_metadata?.role ?? 'teen'
       setRole(metaRole)
       setLoading(false)
@@ -97,32 +100,40 @@ export default function OnboardingPage() {
 
   async function completeOnboarding() {
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) return
 
     const userRole = user.user_metadata?.role ?? 'teen'
     const userName = user.user_metadata?.name ?? user.email?.split('@')[0] ?? 'Usuário'
 
     // Garante que o profile existe antes de navegar para o dashboard
-    await supabase.from('profiles').upsert({
-      id: user.id,
-      email: user.email,
-      name: userName,
-      role: userRole,
-    }, { onConflict: 'id' })
+    await supabase.from('profiles').upsert(
+      {
+        id: user.id,
+        email: user.email,
+        name: userName,
+        role: userRole,
+      },
+      { onConflict: 'id' }
+    )
 
     // Cria registro de XP para teens
     if (userRole === 'teen') {
-      await supabase.from('teen_xp').upsert({
-        teen_id: user.id,
-        total_xp: 0,
-        current_level: 1,
-        current_streak: 0,
-        max_streak: 0,
-        badges: [],
-        current_phase: 1,
-        autonomy_index: 0,
-      }, { onConflict: 'teen_id' })
+      await supabase.from('teen_xp').upsert(
+        {
+          teen_id: user.id,
+          total_xp: 0,
+          current_level: 1,
+          current_streak: 0,
+          max_streak: 0,
+          badges: [],
+          current_phase: 1,
+          autonomy_index: 0,
+        },
+        { onConflict: 'teen_id' }
+      )
     }
 
     // Marca onboarding como completo
@@ -137,7 +148,7 @@ export default function OnboardingPage() {
     if (isLast) {
       await completeOnboarding()
     } else {
-      setStep(s => s + 1)
+      setStep((s) => s + 1)
     }
   }
 
@@ -157,7 +168,11 @@ export default function OnboardingPage() {
           <div
             key={i}
             className={`h-2 rounded-full transition-all duration-300 ${
-              i === step ? 'w-8 bg-teen-purple' : i < step ? 'w-2 bg-teen-purple/40' : 'w-2 bg-gray-200'
+              i === step
+                ? 'w-8 bg-teen-purple'
+                : i < step
+                  ? 'w-2 bg-teen-purple/40'
+                  : 'w-2 bg-gray-200'
             }`}
           />
         ))}
@@ -173,9 +188,7 @@ export default function OnboardingPage() {
           )}
         </div>
 
-        <h2 className="text-2xl font-black text-gray-800 mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          {current.title}
-        </h2>
+        <h2 className="text-2xl font-black text-gray-800 mb-3">{current.title}</h2>
         <p className="text-gray-500 leading-relaxed mb-8">{current.body}</p>
 
         <button

@@ -55,17 +55,13 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex flex-col items-center gap-1">
             <EagleMascot width={90} height={108} />
-            <h1 className="text-3xl font-black text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              Pule Pule
-            </h1>
+            <h1 className="text-3xl font-black text-white">Pule Pule</h1>
           </Link>
           <p className="text-white/70 mt-1">Entre na sua conta</p>
         </div>
 
         <div className="bg-white rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-black text-gray-800 mb-6" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Entrar
-          </h2>
+          <h2 className="text-2xl font-black text-gray-800 mb-6">Entrar</h2>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-4">
@@ -107,7 +103,10 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 space-y-3 text-center">
-            <Link href="/auth/reset-password" className="block text-sm text-gray-400 hover:text-teen-purple transition-colors">
+            <Link
+              href="/auth/reset-password"
+              className="block text-sm text-gray-400 hover:text-teen-purple transition-colors"
+            >
               Esqueci minha senha
             </Link>
             <p className="text-gray-500 text-sm">
@@ -119,7 +118,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-center text-white/50 text-xs mt-6">© 2026 Pule Pule. Todos os direitos reservados.</p>
+        <p className="text-center text-white/50 text-xs mt-6">
+          © 2026 Pule Pule. Todos os direitos reservados.
+        </p>
       </div>
     </div>
   )

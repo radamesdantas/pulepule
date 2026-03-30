@@ -61,18 +61,22 @@ export default function SignupPage() {
       <div className="min-h-screen bg-gradient-to-br from-teen-purple via-purple-600 to-parent-blue flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl p-10 shadow-2xl text-center max-w-md w-full">
           <div className="text-6xl mb-4">📧</div>
-          <h2 className="text-2xl font-black text-gray-800 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Quase lá!
-          </h2>
+          <h2 className="text-2xl font-black text-gray-800 mb-2">Quase lá!</h2>
           <p className="text-gray-600 text-sm leading-relaxed mb-4">
-            Enviamos um link de confirmação para o seu email.<br />
-            <strong>Abra seu email e clique no link</strong> para ativar sua conta e começar a jornada!
+            Enviamos um link de confirmação para o seu email.
+            <br />
+            <strong>Abra seu email e clique no link</strong> para ativar sua conta e começar a
+            jornada!
           </p>
           <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-sm text-purple-700 mb-4">
             <p className="font-semibold mb-1">Não encontrou o email?</p>
             <ul className="text-xs text-purple-600 space-y-0.5 text-left">
-              <li>• Verifique a pasta de <strong>spam</strong> ou <strong>lixo eletrônico</strong></li>
-              <li>• O email vem de <strong>noreply@mail.app.supabase.io</strong></li>
+              <li>
+                • Verifique a pasta de <strong>spam</strong> ou <strong>lixo eletrônico</strong>
+              </li>
+              <li>
+                • O email vem de <strong>noreply@mail.app.supabase.io</strong>
+              </li>
               <li>• Pode levar até 2 minutos para chegar</li>
             </ul>
           </div>
@@ -98,17 +102,13 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex flex-col items-center gap-1">
             <EagleMascot width={90} height={108} />
-            <h1 className="text-3xl font-black text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              Pule Pule
-            </h1>
+            <h1 className="text-3xl font-black text-white">Pule Pule</h1>
           </Link>
           <p className="text-white/70 mt-1">Comece sua jornada</p>
         </div>
 
         <div className="bg-white rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-black text-gray-800 mb-6" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Criar conta grátis
-          </h2>
+          <h2 className="text-2xl font-black text-gray-800 mb-6">Criar conta grátis</h2>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-4">
@@ -141,7 +141,9 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Nome completo</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Nome completo
+              </label>
               <input
                 type="text"
                 placeholder="Seu nome"
@@ -193,7 +195,9 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <p className="text-center text-white/50 text-xs mt-6">© 2026 Pule Pule. Todos os direitos reservados.</p>
+        <p className="text-center text-white/50 text-xs mt-6">
+          © 2026 Pule Pule. Todos os direitos reservados.
+        </p>
       </div>
     </div>
   )

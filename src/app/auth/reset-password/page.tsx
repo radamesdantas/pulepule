@@ -36,13 +36,14 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen bg-gradient-to-br from-teen-purple via-purple-600 to-parent-blue flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl p-10 shadow-2xl text-center max-w-md w-full">
           <div className="text-6xl mb-4">📧</div>
-          <h2 className="text-2xl font-black text-gray-800 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Email enviado!
-          </h2>
+          <h2 className="text-2xl font-black text-gray-800 mb-2">Email enviado!</h2>
           <p className="text-gray-500 text-sm mb-6">
             Verifique sua caixa de entrada e clique no link para redefinir sua senha.
           </p>
-          <Link href="/auth/login" className="text-teen-purple font-semibold hover:underline text-sm">
+          <Link
+            href="/auth/login"
+            className="text-teen-purple font-semibold hover:underline text-sm"
+          >
             ← Voltar para o login
           </Link>
         </div>
@@ -61,16 +62,12 @@ export default function ResetPasswordPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex flex-col items-center gap-1">
             <EagleMascot width={70} height={84} />
-            <h1 className="text-3xl font-black text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              Pule Pule
-            </h1>
+            <h1 className="text-3xl font-black text-white">Pule Pule</h1>
           </Link>
         </div>
 
         <div className="bg-white rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-black text-gray-800 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Esqueceu sua senha?
-          </h2>
+          <h2 className="text-2xl font-black text-gray-800 mb-2">Esqueceu sua senha?</h2>
           <p className="text-gray-500 text-sm mb-6">
             Informe seu email e enviaremos um link para redefinir sua senha.
           </p>
@@ -103,7 +100,10 @@ export default function ResetPasswordPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <Link href="/auth/login" className="text-sm text-teen-purple font-semibold hover:underline">
+            <Link
+              href="/auth/login"
+              className="text-sm text-teen-purple font-semibold hover:underline"
+            >
               ← Voltar para o login
             </Link>
           </div>

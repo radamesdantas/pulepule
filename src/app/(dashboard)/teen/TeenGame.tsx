@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import JourneyPath from '@/components/JourneyPath'
 import BehaviorModal from '@/components/BehaviorModal'
+import { buildBehaviors } from '@/lib/utils/unlock'
 
 const LEVEL_NAMES = ['Explorador', 'Aprendiz', 'Guerreiro', 'Herói', 'Lenda']
 const XP_PER_LEVEL = 500
@@ -32,12 +33,18 @@ interface Props {
     xp_reward: number
     month: number
     phase: number
-    competency: { id: number; name: string; icon: string; description: string; category: string } | null
+    competency: {
+      id: number
+      name: string
+      icon: string
+      description: string
+      category: string
+    } | null
   }>
   teenMissions: Array<{
     id: string
     mission_id: string
-    status: string
+    status: import('@/lib/types/database').MissionStatus
     evidence_url: string | null
     evidence_description: string | null
     mentor_feedback: string | null
@@ -51,48 +58,30 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
   const totalXp = xp?.total_xp ?? 0
   const level = xp?.current_level ?? 1
   const streak = xp?.current_streak ?? 0
-  const phase = xp?.current_phase ?? 1
 
-  const progressMap = new Map(teenMissions.map(tm => [tm.mission_id, tm]))
+  const rawBehaviors = buildBehaviors(missions, teenMissions, EXAMPLES)
 
-  // Build behaviors list with sequential unlock
   const behaviors = missions.map((m, i) => {
-    const tm = progressMap.get(m.id)
-    let status: 'locked' | 'available' | 'in_progress' | 'completed' = 'locked'
-
-    if (tm) {
-      if (tm.status === 'approved') status = 'completed'
-      else if (tm.status === 'in_progress' || tm.status === 'submitted' || tm.status === 'rejected') status = 'in_progress'
-      else status = 'available'
-    } else if (i === 0) {
-      status = 'available'
-    } else {
-      const prevTm = progressMap.get(missions[i - 1].id)
-      if (prevTm?.status === 'approved') status = 'available'
-      // Also unlock if previous is in_progress or beyond
-      else if (prevTm && ['in_progress', 'submitted', 'rejected', 'approved'].includes(prevTm.status)) status = 'available'
-    }
-
+    const b = rawBehaviors[i]
     const comp = Array.isArray(m.competency) ? m.competency[0] : m.competency
-
     return {
       id: m.id,
       title: m.title,
       description: m.description,
-      example: EXAMPLES[m.context] ?? EXAMPLES.default,
+      example: b.example,
       competencyName: comp?.name ?? 'Competência',
       competencyIcon: comp?.icon ?? '⭐',
-      competencyCode: comp ? `${comp.category}-${comp.id}` : `unknown-${i}`,
+      competencyCode: b.competencyCode,
       xpReward: m.xp_reward,
-      status,
+      status: b.status,
       index: i,
       missionId: m.id,
-      evidenceUrl: tm?.evidence_url ?? null,
-      mentorFeedback: tm?.mentor_feedback ?? null,
+      evidenceUrl: b.evidenceUrl,
+      mentorFeedback: b.mentorFeedback,
     }
   })
 
-  const selectedBehavior = selectedId ? behaviors.find(b => b.id === selectedId) ?? null : null
+  const selectedBehavior = selectedId ? (behaviors.find((b) => b.id === selectedId) ?? null) : null
 
   const handleRefresh = useCallback(() => {
     router.refresh()
@@ -105,18 +94,18 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-xs">Olá, {name.split(' ')[0]}</p>
-            <p className="text-white font-black text-lg" style={{ fontFamily: 'Outfit, sans-serif' }}>
+            <p className="text-white font-black text-lg tracking-display font-outfit">
               {LEVEL_NAMES[Math.min(level - 1, LEVEL_NAMES.length - 1)]} — Nível {level}
             </p>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-center">
               <p className="text-xp-gold font-black text-lg">{totalXp}</p>
-              <p className="text-gray-500 text-[10px]">XP</p>
+              <p className="text-gray-500 text-xs">XP</p>
             </div>
             <div className="text-center">
               <p className="text-orange-400 font-black text-lg">{streak}</p>
-              <p className="text-gray-500 text-[10px]">🔥 Dias</p>
+              <p className="text-gray-500 text-xs">🔥 Dias</p>
             </div>
           </div>
         </div>
@@ -129,15 +118,14 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
               style={{ width: `${Math.round(((totalXp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100)}%` }}
             />
           </div>
-          <p className="text-gray-500 text-[10px] mt-1 text-right">{totalXp % XP_PER_LEVEL}/{XP_PER_LEVEL} XP para o próximo nível</p>
+          <p className="text-gray-500 text-xs mt-1 text-right">
+            {totalXp % XP_PER_LEVEL}/{XP_PER_LEVEL} XP para o próximo nível
+          </p>
         </div>
       </div>
 
       {/* Journey path */}
-      <JourneyPath
-        behaviors={behaviors}
-        onSelectBehavior={setSelectedId}
-      />
+      <JourneyPath behaviors={behaviors} onSelectBehavior={setSelectedId} />
 
       {/* Behavior detail modal */}
       {selectedBehavior && (

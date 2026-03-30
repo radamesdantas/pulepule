@@ -36,7 +36,9 @@ export default function UpdatePasswordPage() {
     }
 
     // Determina destino pelo role do usuário
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     const role = user?.user_metadata?.role ?? 'teen'
     const dest = role === 'parent' ? '/parent' : role === 'mentor' ? '/mentor' : '/teen'
     router.push(`${dest}?updated=1`)
@@ -53,19 +55,13 @@ export default function UpdatePasswordPage() {
         <div className="text-center mb-8">
           <div className="inline-flex flex-col items-center gap-1">
             <EagleMascot width={70} height={84} />
-            <h1 className="text-3xl font-black text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              Pule Pule
-            </h1>
+            <h1 className="text-3xl font-black text-white">Pule Pule</h1>
           </div>
         </div>
 
         <div className="bg-white rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-black text-gray-800 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Nova senha
-          </h2>
-          <p className="text-gray-500 text-sm mb-6">
-            Escolha uma nova senha para sua conta.
-          </p>
+          <h2 className="text-2xl font-black text-gray-800 mb-2">Nova senha</h2>
+          <p className="text-gray-500 text-sm mb-6">Escolha uma nova senha para sua conta.</p>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-4">
@@ -87,7 +83,9 @@ export default function UpdatePasswordPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Confirmar senha</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Confirmar senha
+              </label>
               <input
                 type="password"
                 placeholder="Repita a senha"
@@ -95,7 +93,9 @@ export default function UpdatePasswordPage() {
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 className={`w-full border-2 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none transition-colors ${
-                  confirm && confirm !== password ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-teen-purple'
+                  confirm && confirm !== password
+                    ? 'border-red-300 focus:border-red-400'
+                    : 'border-gray-200 focus:border-teen-purple'
                 }`}
               />
               {confirm && confirm !== password && (

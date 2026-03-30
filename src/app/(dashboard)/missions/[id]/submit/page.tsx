@@ -13,10 +13,14 @@ const CONTEXT_LABELS: Record<string, { label: string; icon: string }> = {
 }
 
 const CONTEXT_EXAMPLES: Record<string, string> = {
-  family: 'Ex: "Organizei uma reunião familiar no domingo para discutir as tarefas da semana. Cada pessoa escolheu sua responsabilidade e montamos um quadro na geladeira."',
-  school: 'Ex: "Liderei meu grupo no trabalho de ciências. Dividi as tarefas, criei um cronograma e apresentamos o melhor trabalho da turma."',
-  community: 'Ex: "Organizei uma coleta de roupas no prédio. Bati de porta em porta explicando a causa e conseguimos 3 sacolas para a ONG do bairro."',
-  company: 'Ex: "Criei um plano de negócios para vender brigadeiros na escola. Calculei custos, defini preço e vendi 30 unidades na primeira semana."',
+  family:
+    'Ex: "Organizei uma reunião familiar no domingo para discutir as tarefas da semana. Cada pessoa escolheu sua responsabilidade e montamos um quadro na geladeira."',
+  school:
+    'Ex: "Liderei meu grupo no trabalho de ciências. Dividi as tarefas, criei um cronograma e apresentamos o melhor trabalho da turma."',
+  community:
+    'Ex: "Organizei uma coleta de roupas no prédio. Bati de porta em porta explicando a causa e conseguimos 3 sacolas para a ONG do bairro."',
+  company:
+    'Ex: "Criei um plano de negócios para vender brigadeiros na escola. Calculei custos, defini preço e vendi 30 unidades na primeira semana."',
 }
 
 interface MissionData {
@@ -50,7 +54,9 @@ export default function SubmitMissionPage({ params }: Props) {
       const supabase = createClient()
       const { data } = await supabase
         .from('missions')
-        .select('title, description, context, xp_reward, month, competency:competencies(name, icon, description)')
+        .select(
+          'title, description, context, xp_reward, month, competency:competencies(name, icon, description)'
+        )
         .eq('id', id)
         .single()
       if (data) setMission(data as unknown as MissionData)
@@ -71,8 +77,13 @@ export default function SubmitMissionPage({ params }: Props) {
     setError('')
 
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setUploading(false); return }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      setUploading(false)
+      return
+    }
 
     const ext = file.name.split('.').pop()
     const path = `${user.id}/${missionId}-${Date.now()}.${ext}`
@@ -103,18 +114,24 @@ export default function SubmitMissionPage({ params }: Props) {
     setLoading(true)
 
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user || !missionId) { setLoading(false); return }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user || !missionId) {
+      setLoading(false)
+      return
+    }
 
-    const { error: err } = await supabase
-      .from('teen_missions')
-      .upsert({
+    const { error: err } = await supabase.from('teen_missions').upsert(
+      {
         teen_id: user.id,
         mission_id: missionId,
         status: 'submitted',
         evidence_description: description.trim(),
         evidence_url: evidenceUrl,
-      }, { onConflict: 'teen_id,mission_id' })
+      },
+      { onConflict: 'teen_id,mission_id' }
+    )
 
     if (err) {
       setError('Erro ao enviar entrega. Tente novamente.')
@@ -139,11 +156,10 @@ export default function SubmitMissionPage({ params }: Props) {
       <div className="max-w-md mx-auto pt-16 text-center">
         <div className="bg-white rounded-3xl p-10 shadow-sm border border-gray-100">
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-2xl font-black text-gray-800 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Entrega enviada!
-          </h2>
+          <h2 className="text-2xl font-black text-gray-800 mb-2">Entrega enviada!</h2>
           <p className="text-gray-500 text-sm">
-            Seu mentor vai avaliar sua entrega em breve.<br />
+            Seu mentor vai avaliar sua entrega em breve.
+            <br />
             Redirecionando para missões...
           </p>
           <div className="mt-4 inline-flex items-center gap-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-full px-4 py-2 text-sm font-semibold">
@@ -161,7 +177,10 @@ export default function SubmitMissionPage({ params }: Props) {
   return (
     <div className="max-w-2xl mx-auto space-y-6 px-1">
       {/* Voltar */}
-      <Link href="/missions" className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors text-sm">
+      <Link
+        href="/missions"
+        className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors text-sm"
+      >
         ← Voltar para Missões
       </Link>
 
@@ -175,9 +194,7 @@ export default function SubmitMissionPage({ params }: Props) {
             Mês {mission.month}
           </span>
         </div>
-        <h1 className="text-2xl font-black leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          {mission.title}
-        </h1>
+        <h1 className="text-2xl font-black leading-tight">{mission.title}</h1>
         <div className="mt-3 inline-flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-sm font-bold">
           ⚡ +{mission.xp_reward} XP ao ser aprovado
         </div>
@@ -185,7 +202,7 @@ export default function SubmitMissionPage({ params }: Props) {
 
       {/* Descrição detalhada */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h3 className="font-black text-gray-800 mb-3 flex items-center gap-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
+        <h3 className="font-black text-gray-800 mb-3 flex items-center gap-2">
           📋 O que você precisa fazer
         </h3>
         <p className="text-gray-600 leading-relaxed">{mission.description}</p>
@@ -204,7 +221,7 @@ export default function SubmitMissionPage({ params }: Props) {
       {/* Exemplo prático */}
       {example && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
-          <h3 className="font-black text-amber-800 mb-2 flex items-center gap-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
+          <h3 className="font-black text-amber-800 mb-2 flex items-center gap-2">
             💡 Exemplo prático
           </h3>
           <p className="text-amber-700 text-sm leading-relaxed italic">{example}</p>
@@ -213,9 +230,7 @@ export default function SubmitMissionPage({ params }: Props) {
 
       {/* Formulário de entrega */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 className="text-xl font-black text-gray-800 mb-1" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          Enviar Entrega 📤
-        </h2>
+        <h2 className="text-xl font-black text-gray-800 mb-1">Enviar Entrega 📤</h2>
         <p className="text-gray-500 text-sm mb-5">
           Descreva o que você fez e envie uma prova (foto, vídeo ou documento).
         </p>
@@ -234,13 +249,15 @@ export default function SubmitMissionPage({ params }: Props) {
             </label>
             <textarea
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Descreva detalhadamente o que fez, como executou a missão e qual foi o resultado ou impacto que percebeu..."
               rows={5}
               required
               className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:border-teen-purple transition-colors resize-none"
             />
-            <p className="text-xs text-gray-400 mt-1">{description.length} caracteres (mínimo 20)</p>
+            <p className="text-xs text-gray-400 mt-1">
+              {description.length} caracteres (mínimo 20)
+            </p>
           </div>
 
           {/* Upload de evidência */}
@@ -258,7 +275,10 @@ export default function SubmitMissionPage({ params }: Props) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => { setFileName(null); setEvidenceUrl(null) }}
+                  onClick={() => {
+                    setFileName(null)
+                    setEvidenceUrl(null)
+                  }}
                   className="text-xs text-gray-400 hover:text-red-500 transition-colors"
                 >
                   Remover

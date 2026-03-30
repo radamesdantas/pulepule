@@ -49,9 +49,12 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-56 bg-gray-900 border-r border-gray-800 z-40">
         {/* Logo */}
-        <Link href={role === 'parent' ? '/parent' : role === 'mentor' ? '/mentor' : '/teen'} className="flex items-center gap-2 px-5 py-5 border-b border-gray-800">
+        <Link
+          href={role === 'parent' ? '/parent' : role === 'mentor' ? '/mentor' : '/teen'}
+          className="flex items-center gap-2 px-5 py-5 border-b border-gray-800"
+        >
           <EagleMascot width={32} height={38} />
-          <span className="font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-teen-purple to-parent-blue" style={{ fontFamily: 'Outfit, sans-serif' }}>
+          <span className="font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-teen-purple to-parent-blue font-outfit tracking-display">
             Pule Pule
           </span>
         </Link>
@@ -59,7 +62,12 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
         {/* Nav items */}
         <nav className="flex-1 py-4 space-y-1 px-3">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/teen' && item.href !== '/parent' && item.href !== '/mentor' && pathname.startsWith(item.href))
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/teen' &&
+                item.href !== '/parent' &&
+                item.href !== '/mentor' &&
+                pathname.startsWith(item.href))
             const isNotif = item.href === '/notifications'
             return (
               <Link
@@ -91,7 +99,9 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
             </div>
             <div className="min-w-0">
               <p className="text-white text-sm font-bold truncate">{(name ?? '').split(' ')[0]}</p>
-              <p className="text-gray-500 text-xs">{role === 'teen' ? 'Adolescente' : role === 'parent' ? 'Pai/Mãe' : 'Mentor'}</p>
+              <p className="text-gray-500 text-xs">
+                {role === 'teen' ? 'Adolescente' : role === 'parent' ? 'Pai/Mãe' : 'Mentor'}
+              </p>
             </div>
           </div>
           <button
@@ -107,7 +117,12 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gray-900 border-t border-gray-800">
         <div className="flex items-center justify-around px-1 py-1">
           {navItems.slice(0, 5).map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/teen' && item.href !== '/parent' && item.href !== '/mentor' && pathname.startsWith(item.href))
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/teen' &&
+                item.href !== '/parent' &&
+                item.href !== '/mentor' &&
+                pathname.startsWith(item.href))
             return (
               <Link
                 key={item.href}

@@ -24,10 +24,16 @@ interface Props {
 export default async function ParentTeenDetailPage({ params }: Props) {
   const { id: teenId } = await params
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
   const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
   if (role !== 'parent') redirect('/auth/login')
 
@@ -52,9 +58,9 @@ export default async function ParentTeenDetailPage({ params }: Props) {
     .eq('teen_id', teenId)
     .order('created_at', { ascending: false })
 
-  const approved = missions?.filter(m => m.status === 'approved') ?? []
-  const submitted = missions?.filter(m => m.status === 'submitted') ?? []
-  const inProgress = missions?.filter(m => m.status === 'in_progress') ?? []
+  const approved = missions?.filter((m) => m.status === 'approved') ?? []
+  const submitted = missions?.filter((m) => m.status === 'submitted') ?? []
+  const inProgress = missions?.filter((m) => m.status === 'in_progress') ?? []
 
   const totalXp = xp?.total_xp ?? 0
   const level = xp?.current_level ?? 1
@@ -65,7 +71,10 @@ export default async function ParentTeenDetailPage({ params }: Props) {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/parent" className="text-gray-400 hover:text-gray-600 transition-colors text-sm">
+        <Link
+          href="/parent"
+          className="text-gray-400 hover:text-gray-600 transition-colors text-sm"
+        >
           ← Voltar
         </Link>
       </div>
@@ -75,9 +84,7 @@ export default async function ParentTeenDetailPage({ params }: Props) {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-white/70 text-sm">Acompanhando</p>
-            <h1 className="text-3xl font-black" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              {teen.name}
-            </h1>
+            <h1 className="text-3xl font-black">{teen.name}</h1>
             <p className="text-white/80 text-sm mt-1">
               {getLevelName(level)} — Nível {level} · Fase {phase} {PHASE_LABELS[phase]}
             </p>
@@ -107,14 +114,20 @@ export default async function ParentTeenDetailPage({ params }: Props) {
       {/* Missões aguardando aprovação do mentor */}
       {submitted.length > 0 && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
-          <h3 className="font-black text-yellow-800 mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
+          <h3 className="font-black text-yellow-800 mb-3">
             ⏳ Aguardando avaliação ({submitted.length})
           </h3>
           <div className="space-y-2">
             {submitted.map((tm) => {
-              const m = (Array.isArray(tm.mission) ? tm.mission[0] : tm.mission) as { title: string; xp_reward: number } | null
+              const m = (Array.isArray(tm.mission) ? tm.mission[0] : tm.mission) as {
+                title: string
+                xp_reward: number
+              } | null
               return (
-                <div key={tm.id} className="flex items-center justify-between bg-white rounded-xl px-4 py-2.5">
+                <div
+                  key={tm.id}
+                  className="flex items-center justify-between bg-white rounded-xl px-4 py-2.5"
+                >
                   <p className="text-sm font-semibold text-gray-800">{m?.title}</p>
                   <span className="text-xs font-bold text-xp-gold">+{m?.xp_reward} XP</span>
                 </div>
@@ -127,12 +140,12 @@ export default async function ParentTeenDetailPage({ params }: Props) {
       {/* Em progresso */}
       {inProgress.length > 0 && (
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
-          <h3 className="font-black text-blue-800 mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            🚀 Em andamento ({inProgress.length})
-          </h3>
+          <h3 className="font-black text-blue-800 mb-3">🚀 Em andamento ({inProgress.length})</h3>
           <div className="space-y-2">
             {inProgress.map((tm) => {
-              const m = (Array.isArray(tm.mission) ? tm.mission[0] : tm.mission) as { title: string } | null
+              const m = (Array.isArray(tm.mission) ? tm.mission[0] : tm.mission) as {
+                title: string
+              } | null
               return (
                 <div key={tm.id} className="bg-white rounded-xl px-4 py-2.5">
                   <p className="text-sm font-semibold text-gray-800">{m?.title}</p>
@@ -146,15 +159,18 @@ export default async function ParentTeenDetailPage({ params }: Props) {
       {/* Histórico de missões */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
-          <h3 className="font-black text-gray-800" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Todas as Missões
-          </h3>
+          <h3 className="font-black text-gray-800">Todas as Missões</h3>
         </div>
 
         {missions && missions.length > 0 ? (
           <div className="divide-y divide-gray-50">
             {missions.map((tm) => {
-              const m = (Array.isArray(tm.mission) ? tm.mission[0] : tm.mission) as { title: string; xp_reward: number; context: string; month: number } | null
+              const m = (Array.isArray(tm.mission) ? tm.mission[0] : tm.mission) as {
+                title: string
+                xp_reward: number
+                context: string
+                month: number
+              } | null
               const s = STATUS_MAP[tm.status] ?? STATUS_MAP.pending
               return (
                 <div key={tm.id} className="flex items-center justify-between px-5 py-3">
@@ -166,7 +182,9 @@ export default async function ParentTeenDetailPage({ params }: Props) {
                     )}
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${s.color}`}>{s.label}</span>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${s.color}`}>
+                      {s.label}
+                    </span>
                     {tm.status === 'approved' && (
                       <span className="text-xs font-bold text-xp-gold">+{m?.xp_reward} XP</span>
                     )}
@@ -186,12 +204,13 @@ export default async function ParentTeenDetailPage({ params }: Props) {
       {/* Badges */}
       {xp?.badges && (xp.badges as string[]).length > 0 && (
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <h3 className="font-black text-gray-800 mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Conquistas 🏆
-          </h3>
+          <h3 className="font-black text-gray-800 mb-3">Conquistas 🏆</h3>
           <div className="flex flex-wrap gap-2">
             {(xp.badges as string[]).map((badge) => (
-              <span key={badge} className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">
+              <span
+                key={badge}
+                className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold"
+              >
                 {badge}
               </span>
             ))}

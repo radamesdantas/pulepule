@@ -12,10 +12,16 @@ const MEDALS = ['🥇', '🥈', '🥉']
 
 export default async function LeaderboardPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
   const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
   if (role !== 'teen') redirect('/teen')
 
@@ -26,13 +32,14 @@ export default async function LeaderboardPage() {
     .order('total_xp', { ascending: false })
     .limit(20)
 
-  const teenIds = xpList?.map(x => x.teen_id) ?? []
+  const teenIds = xpList?.map((x) => x.teen_id) ?? []
 
-  const { data: profiles } = teenIds.length > 0
-    ? await supabase.from('profiles').select('id, name').in('id', teenIds)
-    : { data: [] }
+  const { data: profiles } =
+    teenIds.length > 0
+      ? await supabase.from('profiles').select('id, name').in('id', teenIds)
+      : { data: [] }
 
-  const nameMap = new Map(profiles?.map(p => [p.id, p.name]) ?? [])
+  const nameMap = new Map(profiles?.map((p) => [p.id, p.name]) ?? [])
 
   const ranked = (xpList ?? []).map((x, i) => ({
     rank: i + 1,
@@ -45,14 +52,12 @@ export default async function LeaderboardPage() {
     isMe: x.teen_id === user.id,
   }))
 
-  const myRank = ranked.find(r => r.isMe)
+  const myRank = ranked.find((r) => r.isMe)
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-gray-800" style={{ fontFamily: 'Outfit, sans-serif' }}>
-          Ranking 🏆
-        </h1>
+        <h1 className="text-2xl font-black text-gray-800">Ranking 🏆</h1>
         <p className="text-gray-500 text-sm mt-1">Top teens por XP total</p>
       </div>
 
@@ -64,8 +69,12 @@ export default async function LeaderboardPage() {
             <div className="flex items-center gap-4">
               <span className="text-4xl font-black">#{myRank.rank}</span>
               <div>
-                <p className="font-black text-lg">{getLevelName(myRank.level)} — Nível {myRank.level}</p>
-                <p className="text-white/70 text-sm">Fase {myRank.phase} — {PHASE_LABELS[myRank.phase]}</p>
+                <p className="font-black text-lg">
+                  {getLevelName(myRank.level)} — Nível {myRank.level}
+                </p>
+                <p className="text-white/70 text-sm">
+                  Fase {myRank.phase} — {PHASE_LABELS[myRank.phase]}
+                </p>
               </div>
             </div>
             <div className="text-right">
@@ -80,24 +89,42 @@ export default async function LeaderboardPage() {
       {ranked.length >= 3 && (
         <div className="grid grid-cols-3 gap-3">
           {/* 2º */}
-          <div className={`bg-white rounded-2xl p-4 shadow-sm border text-center mt-4 ${ranked[1]?.isMe ? 'border-teen-purple ring-2 ring-teen-purple/30' : 'border-gray-100'}`}>
+          <div
+            className={`bg-white rounded-2xl p-4 shadow-sm border text-center mt-4 ${ranked[1]?.isMe ? 'border-teen-purple ring-2 ring-teen-purple/30' : 'border-gray-100'}`}
+          >
             <p className="text-2xl mb-1">🥈</p>
-            <p className="font-black text-sm text-gray-800 truncate">{ranked[1]?.name.split(' ')[0]}</p>
-            <p className="text-xs font-bold text-xp-gold mt-1">{ranked[1]?.totalXp.toLocaleString('pt-BR')} XP</p>
+            <p className="font-black text-sm text-gray-800 truncate">
+              {ranked[1]?.name.split(' ')[0]}
+            </p>
+            <p className="text-xs font-bold text-xp-gold mt-1">
+              {ranked[1]?.totalXp.toLocaleString('pt-BR')} XP
+            </p>
             <p className="text-[10px] text-gray-400">Nível {ranked[1]?.level}</p>
           </div>
           {/* 1º */}
-          <div className={`bg-white rounded-2xl p-4 shadow-sm border text-center -mt-2 ${ranked[0]?.isMe ? 'border-teen-purple ring-2 ring-teen-purple/30' : 'border-yellow-200'}`}>
+          <div
+            className={`bg-white rounded-2xl p-4 shadow-sm border text-center -mt-2 ${ranked[0]?.isMe ? 'border-teen-purple ring-2 ring-teen-purple/30' : 'border-yellow-200'}`}
+          >
             <p className="text-3xl mb-1">🥇</p>
-            <p className="font-black text-sm text-gray-800 truncate">{ranked[0]?.name.split(' ')[0]}</p>
-            <p className="text-xs font-bold text-xp-gold mt-1">{ranked[0]?.totalXp.toLocaleString('pt-BR')} XP</p>
+            <p className="font-black text-sm text-gray-800 truncate">
+              {ranked[0]?.name.split(' ')[0]}
+            </p>
+            <p className="text-xs font-bold text-xp-gold mt-1">
+              {ranked[0]?.totalXp.toLocaleString('pt-BR')} XP
+            </p>
             <p className="text-[10px] text-gray-400">Nível {ranked[0]?.level}</p>
           </div>
           {/* 3º */}
-          <div className={`bg-white rounded-2xl p-4 shadow-sm border text-center mt-4 ${ranked[2]?.isMe ? 'border-teen-purple ring-2 ring-teen-purple/30' : 'border-gray-100'}`}>
+          <div
+            className={`bg-white rounded-2xl p-4 shadow-sm border text-center mt-4 ${ranked[2]?.isMe ? 'border-teen-purple ring-2 ring-teen-purple/30' : 'border-gray-100'}`}
+          >
             <p className="text-2xl mb-1">🥉</p>
-            <p className="font-black text-sm text-gray-800 truncate">{ranked[2]?.name.split(' ')[0]}</p>
-            <p className="text-xs font-bold text-xp-gold mt-1">{ranked[2]?.totalXp.toLocaleString('pt-BR')} XP</p>
+            <p className="font-black text-sm text-gray-800 truncate">
+              {ranked[2]?.name.split(' ')[0]}
+            </p>
+            <p className="text-xs font-bold text-xp-gold mt-1">
+              {ranked[2]?.totalXp.toLocaleString('pt-BR')} XP
+            </p>
             <p className="text-[10px] text-gray-400">Nível {ranked[2]?.level}</p>
           </div>
         </div>
@@ -106,9 +133,7 @@ export default async function LeaderboardPage() {
       {/* Lista completa */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-50">
-          <h3 className="font-black text-gray-800" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Todos os Rankings
-          </h3>
+          <h3 className="font-black text-gray-800">Todos os Rankings</h3>
         </div>
         <div className="divide-y divide-gray-50">
           {ranked.map((r) => (
@@ -117,10 +142,11 @@ export default async function LeaderboardPage() {
               className={`flex items-center gap-4 px-5 py-3 transition-colors ${r.isMe ? 'bg-purple-50' : 'hover:bg-gray-50'}`}
             >
               <div className="w-8 text-center">
-                {r.rank <= 3
-                  ? <span className="text-xl">{MEDALS[r.rank - 1]}</span>
-                  : <span className="text-sm font-black text-gray-400">#{r.rank}</span>
-                }
+                {r.rank <= 3 ? (
+                  <span className="text-xl">{MEDALS[r.rank - 1]}</span>
+                ) : (
+                  <span className="text-sm font-black text-gray-400">#{r.rank}</span>
+                )}
               </div>
 
               <div className="w-9 h-9 bg-gradient-to-br from-teen-purple to-parent-blue rounded-full flex items-center justify-center text-white font-black text-sm shrink-0">
@@ -129,15 +155,21 @@ export default async function LeaderboardPage() {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className={`font-bold text-sm truncate ${r.isMe ? 'text-teen-purple' : 'text-gray-800'}`}>
+                  <p
+                    className={`font-bold text-sm truncate ${r.isMe ? 'text-teen-purple' : 'text-gray-800'}`}
+                  >
                     {r.name} {r.isMe && <span className="text-xs font-normal">(você)</span>}
                   </p>
                 </div>
-                <p className="text-xs text-gray-400">{getLevelName(r.level)} · Fase {r.phase} · 🔥 {r.streak} dias</p>
+                <p className="text-xs text-gray-400">
+                  {getLevelName(r.level)} · Fase {r.phase} · 🔥 {r.streak} dias
+                </p>
               </div>
 
               <div className="text-right shrink-0">
-                <p className="font-black text-sm text-xp-gold">{r.totalXp.toLocaleString('pt-BR')} XP</p>
+                <p className="font-black text-sm text-xp-gold">
+                  {r.totalXp.toLocaleString('pt-BR')} XP
+                </p>
                 <p className="text-[10px] text-gray-400">Nível {r.level}</p>
               </div>
             </div>

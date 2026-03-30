@@ -4,7 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 
 export default async function ParentDashboard() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
@@ -17,30 +19,33 @@ export default async function ParentDashboard() {
     .select('teen_id')
     .eq('parent_id', user.id)
 
-  const teenIds = links?.map(l => l.teen_id) ?? []
+  const teenIds = links?.map((l) => l.teen_id) ?? []
 
-  const { data: teens } = teenIds.length > 0
-    ? await supabase.from('profiles').select('*').in('id', teenIds)
-    : { data: [] }
+  const { data: teens } =
+    teenIds.length > 0
+      ? await supabase.from('profiles').select('*').in('id', teenIds)
+      : { data: [] }
 
-  const { data: xpData } = teenIds.length > 0
-    ? await supabase.from('teen_xp').select('*').in('teen_id', teenIds)
-    : { data: [] }
+  const { data: xpData } =
+    teenIds.length > 0
+      ? await supabase.from('teen_xp').select('*').in('teen_id', teenIds)
+      : { data: [] }
 
-  const xpMap = new Map(xpData?.map(x => [x.teen_id, x]) ?? [])
+  const xpMap = new Map(xpData?.map((x) => [x.teen_id, x]) ?? [])
 
-  const { data: pendingMissions } = teenIds.length > 0
-    ? await supabase
-        .from('teen_missions')
-        .select('*, mission:missions(title), teen:profiles(name)')
-        .in('teen_id', teenIds)
-        .eq('status', 'submitted')
-    : { data: [] }
+  const { data: pendingMissions } =
+    teenIds.length > 0
+      ? await supabase
+          .from('teen_missions')
+          .select('*, mission:missions(title), teen:profiles(name)')
+          .in('teen_id', teenIds)
+          .eq('status', 'submitted')
+      : { data: [] }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-black text-gray-800" style={{ fontFamily: 'Outfit, sans-serif' }}>
+        <h1 className="text-2xl font-black text-gray-800">
           Olá, {profile?.name ?? user.user_metadata?.name ?? 'Usuário'} 👋
         </h1>
         <p className="text-gray-500 text-sm mt-1">Acompanhe o desenvolvimento dos seus teens</p>
@@ -59,15 +64,18 @@ export default async function ParentDashboard() {
               const PHASE_LABELS = ['', 'Descoberta', 'Desenvolvimento', 'Liderança', 'Legado']
 
               return (
-                <div key={teen.id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <div
+                  key={teen.id}
+                  className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+                >
                   <div className="flex items-start justify-between">
                     <div>
                       <Link href={`/parent/teens/${teen.id}`} className="hover:underline">
-                        <h3 className="font-black text-gray-800 text-lg" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                          {teen.name} →
-                        </h3>
+                        <h3 className="font-black text-gray-800 text-lg">{teen.name} →</h3>
                       </Link>
-                      <p className="text-sm text-gray-500">Fase {phase} — {PHASE_LABELS[phase]}</p>
+                      <p className="text-sm text-gray-500">
+                        Fase {phase} — {PHASE_LABELS[phase]}
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-black text-teen-purple">{autonomy}%</p>
@@ -110,12 +118,15 @@ export default async function ParentDashboard() {
           {/* Missões aguardando aprovação */}
           {pendingMissions && pendingMissions.length > 0 && (
             <div className="bg-white rounded-2xl p-5 shadow-sm border border-yellow-200">
-              <h3 className="font-black text-gray-800 mb-4" style={{ fontFamily: 'Outfit, sans-serif' }}>
+              <h3 className="font-black text-gray-800 mb-4">
                 ⏳ Aguardando sua aprovação ({pendingMissions.length})
               </h3>
               <div className="space-y-3">
                 {pendingMissions.map((tm) => (
-                  <div key={tm.id} className="flex items-center justify-between border-b border-gray-50 last:border-0 py-2">
+                  <div
+                    key={tm.id}
+                    className="flex items-center justify-between border-b border-gray-50 last:border-0 py-2"
+                  >
                     <div>
                       <p className="text-sm font-bold text-gray-800">
                         {(tm.mission as { title: string })?.title}
@@ -126,7 +137,10 @@ export default async function ParentDashboard() {
                     </div>
                     <div className="flex gap-2">
                       <form action={`/api/missions/${tm.id}/approve`} method="POST">
-                        <button type="submit" className="bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-green-600 transition-colors">
+                        <button
+                          type="submit"
+                          className="bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-green-600 transition-colors"
+                        >
                           Aprovar ✓
                         </button>
                       </form>
@@ -140,9 +154,7 @@ export default async function ParentDashboard() {
       ) : (
         <div className="bg-white rounded-2xl p-10 text-center shadow-sm border border-gray-100">
           <p className="text-4xl mb-3">👨‍👩‍👦</p>
-          <h3 className="font-black text-gray-800 mb-1" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Nenhum teen vinculado
-          </h3>
+          <h3 className="font-black text-gray-800 mb-1">Nenhum teen vinculado</h3>
           <p className="text-gray-500 text-sm">
             Peça ao seu filho(a) para compartilhar o código de vínculo após criar a conta.
           </p>
