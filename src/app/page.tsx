@@ -546,13 +546,13 @@ export default function Home() {
         </div>
         <p className="mb-2">© 2026 Pule Pule. Todos os direitos reservados.</p>
         <div className="flex justify-center gap-4">
-          <Link href="#" className="hover:text-white transition-colors">
+          <Link href="/privacidade" className="hover:text-white transition-colors">
             Privacidade
           </Link>
-          <Link href="#" className="hover:text-white transition-colors">
+          <Link href="/termos" className="hover:text-white transition-colors">
             Termos
           </Link>
-          <Link href="#" className="hover:text-white transition-colors">
+          <Link href="/contato" className="hover:text-white transition-colors">
             Contato
           </Link>
         </div>
