@@ -198,7 +198,7 @@ export default function Home() {
                 },
                 {
                   icon: '📊',
-                  title: 'Autonomy Index',
+                  title: 'Índice de Autonomia',
                   desc: 'Acompanhe seu crescimento de 0% a 100% de autonomia ao longo da jornada.',
                 },
                 {
@@ -443,7 +443,7 @@ export default function Home() {
                 {[
                   {
                     icon: '📊',
-                    title: 'Autonomy Index',
+                    title: 'Índice de Autonomia',
                     desc: 'Veja a evolução de autonomia do seu filho de 0% a 100% em tempo real.',
                   },
                   {
@@ -486,7 +486,7 @@ export default function Home() {
                 </div>
                 <div className="p-4 bg-gray-700/50 rounded-2xl">
                   <div className="flex justify-between items-center mb-2">
-                    <div className="text-sm font-bold text-white">Autonomy Index</div>
+                    <div className="text-sm font-bold text-white">Índice de Autonomia</div>
                     <span className="text-teen-purple font-black">42%</span>
                   </div>
                   <div className="w-full bg-gray-600 rounded-full h-2.5">
