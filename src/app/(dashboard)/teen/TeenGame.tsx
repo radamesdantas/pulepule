@@ -29,6 +29,7 @@ interface Props {
     id: string
     title: string
     description: string
+    example?: string | null
     context: string
     xp_reward: number
     month: number
@@ -68,7 +69,7 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
       id: m.id,
       title: m.title,
       description: m.description,
-      example: b.example,
+      example: m.example ?? b.example,
       competencyName: comp?.name ?? 'Competência',
       competencyIcon: comp?.icon ?? '⭐',
       competencyCode: b.competencyCode,
