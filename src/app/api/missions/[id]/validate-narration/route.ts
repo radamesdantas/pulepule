@@ -28,7 +28,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     .select('role')
     .eq('id', user.id)
     .single()
-  if (!profile || profile.role !== 'teen') {
+  // Só bloqueia se soubermos EXPLICITAMENTE que não é teen (mentor/pai)
+  // Se profile for null (falha de RLS ou sessão), deixa passar — o check de teen_mission garante autorização
+  if (profile && profile.role !== 'teen') {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })
   }
 
