@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import Groq from 'groq-sdk'
 
 const CONTEXT_EXAMPLES: Record<string, string> = {
   escola:
@@ -88,9 +88,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'Erro ao registrar missão.' }, { status: 500 })
   }
 
-  // Chama Gemini para validar a narração
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '')
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+  // Chama Groq (Llama) para validar a narração
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
   // Usa o exemplo específico da missão; fallback para o mapa genérico por contexto
   const missionExample = (mission as { example?: string | null }).example
@@ -119,12 +118,15 @@ ou
 
   let raw: string
   try {
-    const result = await model.generateContent(prompt)
-    raw = result.response.text().trim()
-    // Remove possíveis blocos markdown que o Gemini às vezes adiciona
-    raw = raw.replace(/^```json\s*/i, '').replace(/\s*```$/, '')
+    const completion = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 300,
+      temperature: 0.3,
+      messages: [{ role: 'user', content: prompt }],
+    })
+    raw = completion.choices[0]?.message?.content?.trim() ?? '{}'
   } catch (aiErr) {
-    console.error('Gemini API error:', aiErr instanceof Error ? aiErr.message : String(aiErr))
+    console.error('Groq API error:', aiErr instanceof Error ? aiErr.message : String(aiErr))
     return NextResponse.json(
       {
         error:
