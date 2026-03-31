@@ -4,10 +4,10 @@ import SplashScreen from '@/components/SplashScreen'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-950 overflow-hidden">
+    <div className="min-h-screen bg-violet-950 overflow-hidden">
       <SplashScreen />
       {/* ── NAVBAR ─────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-gray-950/90 backdrop-blur-md border-b border-gray-800">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-violet-950/90 backdrop-blur-md border-b border-violet-800">
         <div className="max-w-6xl mx-auto px-4 py-3 relative flex items-center justify-center">
           <div className="flex items-center gap-1.5">
             <EagleMascot width={34} height={40.8} animate={false} />
@@ -34,7 +34,7 @@ export default function Home() {
 
       {/* ── HERO ───────────────────────────────────────────────── */}
       <section className="pt-20 min-h-screen flex flex-col">
-        <div className="flex-1 bg-gray-950 relative overflow-hidden flex items-center border-b border-gray-800">
+        <div className="flex-1 bg-violet-950 relative overflow-hidden flex items-center border-b border-violet-800">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-20 left-10 w-72 h-72 bg-teen-purple/8 rounded-full blur-3xl" />
             <div className="absolute bottom-20 right-10 w-96 h-96 bg-parent-blue/8 rounded-full blur-3xl" />
@@ -115,7 +115,7 @@ export default function Home() {
       </section>
 
       {/* ── PARA QUEM É ────────────────────────────────────────── */}
-      <section className="py-16 bg-gray-900">
+      <section className="py-16 bg-violet-900">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-6">
             {[
@@ -135,7 +135,10 @@ export default function Home() {
                 desc: 'Que querem impactar jovens e adolescentes com missões práticas, validação de entregas e crescimento mensurável.',
               },
             ].map(({ icon, title, desc }) => (
-              <div key={title} className="bg-gray-800 rounded-3xl p-6 border border-gray-700">
+              <div
+                key={title}
+                className="bg-violet-900/60 rounded-3xl p-6 border border-violet-700"
+              >
                 <div className="text-4xl mb-3">{icon}</div>
                 <h3 className="font-black text-white mb-2 font-outfit">{title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
@@ -146,7 +149,7 @@ export default function Home() {
       </section>
 
       {/* ── FEATURES ───────────────────────────────────────────── */}
-      <section className="py-24 bg-gray-950">
+      <section className="py-24 bg-violet-950">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-white mb-4 tracking-display font-outfit">
@@ -233,7 +236,7 @@ export default function Home() {
       </section>
 
       {/* ── JORNADA 12 MESES ───────────────────────────────────── */}
-      <section className="py-24 bg-gray-900">
+      <section className="py-24 bg-violet-900">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-teen-purple/10 text-teen-purple rounded-full px-4 py-2 text-sm font-bold mb-4">
@@ -284,7 +287,7 @@ export default function Home() {
             ].map(({ fase, meses, titulo, cor, emoji, desc }) => (
               <div
                 key={fase}
-                className="bg-gray-800 rounded-3xl overflow-hidden border border-gray-700"
+                className="bg-violet-900/60 rounded-3xl overflow-hidden border border-violet-700"
               >
                 <div className={`bg-gradient-to-br ${cor} p-5 text-white`}>
                   <div className="text-3xl mb-2">{emoji}</div>
@@ -303,7 +306,7 @@ export default function Home() {
           </div>
 
           {/* 24 competências */}
-          <div className="bg-gray-800 rounded-3xl p-8 border border-gray-700">
+          <div className="bg-violet-900/60 rounded-3xl p-8 border border-violet-700">
             <h3 className="font-black text-white text-xl mb-6 text-center tracking-display font-outfit">
               24 Competências Desenvolvidas
             </h3>
@@ -370,7 +373,7 @@ export default function Home() {
       </section>
 
       {/* ── COMO FUNCIONA ──────────────────────────────────────── */}
-      <section id="como-funciona" className="py-24 bg-gray-950">
+      <section id="como-funciona" className="py-24 bg-violet-950">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-white mb-4 tracking-display font-outfit">
@@ -422,7 +425,7 @@ export default function Home() {
       </section>
 
       {/* ── PAIS ───────────────────────────────────────────────── */}
-      <section className="py-24 bg-gray-900">
+      <section className="py-24 bg-violet-900">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -469,7 +472,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="bg-gray-800 rounded-3xl p-6 border border-gray-700">
+            <div className="bg-violet-900/60 rounded-3xl p-6 border border-violet-700">
               <div className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
                 Dashboard dos Pais
               </div>
@@ -481,12 +484,12 @@ export default function Home() {
                   </div>
                   <span className="text-level-up font-black text-sm">✅ No caminho certo</span>
                 </div>
-                <div className="p-4 bg-gray-700/50 rounded-2xl">
+                <div className="p-4 bg-violet-800/50 rounded-2xl">
                   <div className="flex justify-between items-center mb-2">
                     <div className="text-sm font-bold text-white">Índice de Autonomia</div>
                     <span className="text-teen-purple font-black">42%</span>
                   </div>
-                  <div className="w-full bg-gray-600 rounded-full h-2.5">
+                  <div className="w-full bg-violet-700 rounded-full h-2.5">
                     <div
                       className="bg-gradient-to-r from-teen-purple to-parent-blue h-2.5 rounded-full"
                       style={{ width: '42%' }}
@@ -503,7 +506,7 @@ export default function Home() {
                     3
                   </span>
                 </div>
-                <div className="p-4 bg-gray-700/50 rounded-2xl">
+                <div className="p-4 bg-violet-800/50 rounded-2xl">
                   <div className="text-sm font-bold text-white mb-1">Próxima reunião familiar</div>
                   <div className="text-xs text-gray-500">Sábado, 29 de março — 9h00 (30 min)</div>
                 </div>
@@ -535,7 +538,7 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────────── */}
-      <footer className="py-8 bg-gray-900 text-gray-400 text-center text-sm">
+      <footer className="py-8 bg-violet-900 text-gray-400 text-center text-sm">
         <div className="flex items-center justify-center gap-1.5 mb-3">
           <EagleMascot width={24} height={28.8} animate={false} />
           <span className="font-black text-white font-outfit">Pule Pule</span>
@@ -571,7 +574,7 @@ function FeatureCard({
   items: { icon: string; title: string; desc: string }[]
 }) {
   return (
-    <div className="bg-gray-800 border border-gray-700 rounded-3xl p-8">
+    <div className="bg-violet-900/60 border border-violet-700 rounded-3xl p-8">
       <div
         className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center text-2xl mb-5`}
       >
