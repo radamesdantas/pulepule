@@ -6,21 +6,23 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 const CONTEXT_LABELS: Record<string, { label: string; icon: string }> = {
-  family: { label: 'Família', icon: '👨‍👩‍👦' },
-  school: { label: 'Escola', icon: '🏫' },
-  community: { label: 'Comunidade', icon: '🌍' },
-  company: { label: 'Empresa', icon: '🏢' },
+  escola: { label: 'Escola', icon: '🏫' },
+  familia: { label: 'Família', icon: '👨‍👩‍👦' },
+  amigos: { label: 'Amigos', icon: '👫' },
+  casa: { label: 'Casa', icon: '🏠' },
+  pessoal: { label: 'Pessoal', icon: '🧍' },
 }
 
 const CONTEXT_EXAMPLES: Record<string, string> = {
-  family:
-    'Ex: "Organizei uma reunião familiar no domingo para discutir as tarefas da semana. Cada pessoa escolheu sua responsabilidade e montamos um quadro na geladeira."',
-  school:
+  escola:
     'Ex: "Liderei meu grupo no trabalho de ciências. Dividi as tarefas, criei um cronograma e apresentamos o melhor trabalho da turma."',
-  community:
-    'Ex: "Organizei uma coleta de roupas no prédio. Bati de porta em porta explicando a causa e conseguimos 3 sacolas para a ONG do bairro."',
-  company:
-    'Ex: "Criei um plano de negócios para vender brigadeiros na escola. Calculei custos, defini preço e vendi 30 unidades na primeira semana."',
+  familia:
+    'Ex: "Organizei uma reunião familiar no domingo para discutir as tarefas da semana. Cada pessoa escolheu sua responsabilidade e montamos um quadro na geladeira."',
+  amigos:
+    'Ex: "Com a Ana, que é direta, fui reto ao ponto. Com o Lucas, mais sensível, comecei perguntando como ele estava antes de falar o que precisava."',
+  casa: 'Ex: "Organizei as rotinas domésticas da semana com minha família. Cada um escolheu sua responsabilidade e combinamos como acompanhar o progresso."',
+  pessoal:
+    'Ex: "Defini um objetivo claro para o mês, criei um plano com etapas e acompanhei meu progresso semanalmente até concluir."',
 }
 
 interface MissionData {
@@ -38,15 +40,15 @@ interface Props {
 
 export default function SubmitMissionPage({ params }: Props) {
   const router = useRouter()
-  const [description, setDescription] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [uploading, setUploading] = useState(false)
+  const [narration, setNarration] = useState('')
+  const [validating, setValidating] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
+  const [rejected, setRejected] = useState(false)
+  const [rejectionFeedback, setRejectionFeedback] = useState('')
+  const [approved, setApproved] = useState(false)
+  const [xpGained, setXpGained] = useState(0)
   const [missionId, setMissionId] = useState<string | null>(null)
   const [mission, setMission] = useState<MissionData | null>(null)
-  const [evidenceUrl, setEvidenceUrl] = useState<string | null>(null)
-  const [fileName, setFileName] = useState<string | null>(null)
 
   useEffect(() => {
     params.then(async ({ id }) => {
@@ -63,84 +65,47 @@ export default function SubmitMissionPage({ params }: Props) {
     })
   }, [params])
 
-  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file || !missionId) return
-
-    const maxSize = 10 * 1024 * 1024 // 10MB
-    if (file.size > maxSize) {
-      setError('Arquivo muito grande. Máximo 10MB.')
-      return
-    }
-
-    setUploading(true)
-    setError('')
-
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (!user) {
-      setUploading(false)
-      return
-    }
-
-    const ext = file.name.split('.').pop()
-    const path = `${user.id}/${missionId}-${Date.now()}.${ext}`
-
-    const { data, error: uploadError } = await supabase.storage
-      .from('evidence')
-      .upload(path, file, { upsert: true })
-
-    if (uploadError) {
-      setError('Erro ao enviar arquivo. Tente novamente.')
-      setUploading(false)
-      return
-    }
-
-    const { data: urlData } = supabase.storage.from('evidence').getPublicUrl(data.path)
-    setEvidenceUrl(urlData.publicUrl)
-    setFileName(file.name)
-    setUploading(false)
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleValidate(e: React.FormEvent) {
     e.preventDefault()
-    if (!description.trim() || description.trim().length < 20) {
+    if (!missionId) return
+    if (narration.trim().length < 20) {
       setError('Descreva sua entrega com pelo menos 20 caracteres.')
       return
     }
+
     setError('')
-    setLoading(true)
+    setRejected(false)
+    setRejectionFeedback('')
+    setValidating(true)
 
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    if (!user || !missionId) {
-      setLoading(false)
-      return
+    try {
+      const res = await fetch(`/api/missions/${missionId}/validate-narration`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ narration: narration.trim() }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error ?? 'Erro ao validar. Tente novamente.')
+        setValidating(false)
+        return
+      }
+
+      if (data.approved) {
+        setXpGained(data.xpReward ?? mission?.xp_reward ?? 0)
+        setApproved(true)
+        setTimeout(() => router.push('/missions'), 3000)
+      } else {
+        setRejected(true)
+        setRejectionFeedback(data.feedback ?? 'Tente detalhar melhor sua narração.')
+      }
+    } catch {
+      setError('Erro de conexão. Tente novamente.')
     }
 
-    const { error: err } = await supabase.from('teen_missions').upsert(
-      {
-        teen_id: user.id,
-        mission_id: missionId,
-        status: 'submitted',
-        evidence_description: description.trim(),
-        evidence_url: evidenceUrl,
-      },
-      { onConflict: 'teen_id,mission_id' }
-    )
-
-    if (err) {
-      setError('Erro ao enviar entrega. Tente novamente.')
-      setLoading(false)
-      return
-    }
-
-    setSuccess(true)
-    setTimeout(() => router.push('/missions'), 2500)
+    setValidating(false)
   }
 
   if (!mission) {
@@ -151,20 +116,16 @@ export default function SubmitMissionPage({ params }: Props) {
     )
   }
 
-  if (success) {
+  if (approved) {
     return (
       <div className="max-w-md mx-auto pt-16 text-center">
         <div className="bg-white rounded-3xl p-10 shadow-sm border border-gray-100">
           <div className="text-6xl mb-4">🎉</div>
-          <h2 className="text-2xl font-black text-gray-800 mb-2">Entrega enviada!</h2>
-          <p className="text-gray-500 text-sm">
-            Seu mentor vai avaliar sua entrega em breve.
-            <br />
-            Redirecionando para missões...
-          </p>
-          <div className="mt-4 inline-flex items-center gap-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-full px-4 py-2 text-sm font-semibold">
-            ⏳ Aguardando avaliação
+          <h2 className="text-2xl font-black text-gray-800 mb-2">Comportamento aprovado!</h2>
+          <div className="mt-3 inline-flex items-center gap-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-full px-4 py-2 text-lg font-black">
+            +{xpGained} XP
           </div>
+          <p className="text-gray-500 text-sm mt-4">Redirecionando para missões...</p>
         </div>
       </div>
     )
@@ -176,7 +137,6 @@ export default function SubmitMissionPage({ params }: Props) {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 px-1">
-      {/* Voltar */}
       <Link
         href="/missions"
         className="inline-flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors text-sm"
@@ -196,14 +156,14 @@ export default function SubmitMissionPage({ params }: Props) {
         </div>
         <h1 className="text-2xl font-black leading-tight">{mission.title}</h1>
         <div className="mt-3 inline-flex items-center gap-1 bg-white/20 rounded-full px-3 py-1 text-sm font-bold">
-          ⚡ +{mission.xp_reward} XP ao ser aprovado
+          ⚡ +{mission.xp_reward} XP ao ser aprovado pela IA
         </div>
       </div>
 
-      {/* Descrição detalhada */}
+      {/* Descrição */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 className="font-black text-gray-800 mb-3 flex items-center gap-2">
-          📋 O que você precisa fazer
+          📋 O que você precisava fazer
         </h3>
         <p className="text-gray-600 leading-relaxed">{mission.description}</p>
 
@@ -228,11 +188,23 @@ export default function SubmitMissionPage({ params }: Props) {
         </div>
       )}
 
-      {/* Formulário de entrega */}
+      {/* Feedback de rejeição */}
+      {rejected && rejectionFeedback && (
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-lg">💬</span>
+            <h3 className="font-black text-orange-800 text-sm">Precisa melhorar</h3>
+          </div>
+          <p className="text-orange-700 text-sm leading-relaxed">{rejectionFeedback}</p>
+        </div>
+      )}
+
+      {/* Formulário de narração */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 className="text-xl font-black text-gray-800 mb-1">Enviar Entrega 📤</h2>
+        <h2 className="text-xl font-black text-gray-800 mb-1">Narre o que você fez ✍️</h2>
         <p className="text-gray-500 text-sm mb-5">
-          Descreva o que você fez e envie uma prova (foto, vídeo ou documento).
+          Descreva com detalhes o que você fez, como executou e qual foi o resultado. A IA irá
+          analisar e aprovar automaticamente.
         </p>
 
         {error && (
@@ -241,85 +213,50 @@ export default function SubmitMissionPage({ params }: Props) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Descrição */}
+        <form onSubmit={handleValidate} className="space-y-5">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               O que você fez? <span className="text-red-400">*</span>
             </label>
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={narration}
+              onChange={(e) => {
+                setNarration(e.target.value)
+                if (rejected) setRejected(false)
+              }}
               placeholder="Descreva detalhadamente o que fez, como executou a missão e qual foi o resultado ou impacto que percebeu..."
-              rows={5}
+              rows={6}
               required
               className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:border-teen-purple transition-colors resize-none"
             />
-            <p className="text-xs text-gray-400 mt-1">
-              {description.length} caracteres (mínimo 20)
-            </p>
+            <p className="text-xs text-gray-400 mt-1">{narration.length} caracteres (mínimo 20)</p>
           </div>
 
-          {/* Upload de evidência */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Prova da missão (foto, vídeo ou documento)
-            </label>
-
-            {fileName ? (
-              <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
-                <span className="text-green-600 text-lg">✅</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-green-700 truncate">{fileName}</p>
-                  <p className="text-xs text-green-600">Arquivo enviado com sucesso</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFileName(null)
-                    setEvidenceUrl(null)
-                  }}
-                  className="text-xs text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  Remover
-                </button>
-              </div>
-            ) : (
-              <label className="flex flex-col items-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-4 py-8 cursor-pointer hover:border-teen-purple hover:bg-purple-50/30 transition-all">
-                <span className="text-3xl">📎</span>
-                <span className="text-sm font-semibold text-gray-600">
-                  {uploading ? 'Enviando...' : 'Clique para enviar arquivo'}
-                </span>
-                <span className="text-xs text-gray-400">Fotos, vídeos ou PDFs • Máximo 10MB</span>
-                <input
-                  type="file"
-                  accept="image/*,video/*,.pdf,.doc,.docx"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="hidden"
-                />
-              </label>
-            )}
-          </div>
-
-          {/* Dicas */}
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-sm text-blue-700">
-            <p className="font-semibold mb-1">✏️ Dicas para uma boa entrega:</p>
+            <p className="font-semibold mb-1">✏️ Dicas para uma boa narração:</p>
             <ul className="space-y-0.5 text-blue-600">
               <li>• Descreva especificamente o que você fez</li>
               <li>• Mencione quem esteve envolvido</li>
               <li>• Fale sobre os desafios e como os superou</li>
               <li>• Compartilhe o resultado e o que aprendeu</li>
-              <li>• Anexe uma foto ou vídeo como prova</li>
             </ul>
           </div>
 
           <button
             type="submit"
-            disabled={loading || description.trim().length < 20}
+            disabled={validating || narration.trim().length < 20}
             className="w-full bg-gradient-to-r from-teen-purple to-parent-blue text-white font-bold text-lg py-4 rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-teen-purple/30 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
           >
-            {loading ? 'Enviando...' : 'Enviar para Avaliação 🚀'}
+            {validating ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Analisando com IA...
+              </span>
+            ) : rejected ? (
+              'Tentar novamente 🔄'
+            ) : (
+              'Validar com IA ✨'
+            )}
           </button>
         </form>
       </div>

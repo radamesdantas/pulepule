@@ -44,19 +44,20 @@ describe('resolveBehaviorStatus', () => {
     expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('available')
   })
 
-  it('missão sem teen_mission e anterior in_progress → available (unlock progressivo)', () => {
+  // Regra estrita: só approved desbloqueia — todos os outros mantêm locked
+  it('missão sem teen_mission e anterior in_progress → locked (unlock apenas com approved)', () => {
     const prev: TeenMissionInput = { mission_id: 'prev', status: 'in_progress' }
-    expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('available')
+    expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('locked')
   })
 
-  it('missão sem teen_mission e anterior submitted → available', () => {
+  it('missão sem teen_mission e anterior submitted → locked', () => {
     const prev: TeenMissionInput = { mission_id: 'prev', status: 'submitted' }
-    expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('available')
+    expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('locked')
   })
 
-  it('missão sem teen_mission e anterior rejected → available', () => {
+  it('missão sem teen_mission e anterior rejected → locked', () => {
     const prev: TeenMissionInput = { mission_id: 'prev', status: 'rejected' }
-    expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('available')
+    expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('locked')
   })
 
   it('missão sem teen_mission e anterior pending → locked', () => {
@@ -99,21 +100,33 @@ describe('buildBehaviors', () => {
     expect(result[1].status).toBe('available')
   })
 
-  it('primeira in_progress desbloqueia a segunda (unlock progressivo)', () => {
+  it('primeira in_progress NÃO desbloqueia a segunda (regra estrita)', () => {
     const missions = [makeMission('m1'), makeMission('m2')]
     const teenMissions: TeenMissionInput[] = [{ mission_id: 'm1', status: 'in_progress' }]
     const result = buildBehaviors(missions, teenMissions, { default: '' })
     expect(result[0].status).toBe('in_progress')
-    expect(result[1].status).toBe('available')
+    expect(result[1].status).toBe('locked')
   })
 
-  it('segunda missão submitted, terceira ainda locked', () => {
+  it('segunda missão submitted: terceira permanece locked (só approved libera)', () => {
     const missions = [makeMission('m1'), makeMission('m2'), makeMission('m3')]
     const teenMissions: TeenMissionInput[] = [
       { mission_id: 'm1', status: 'approved' },
       { mission_id: 'm2', status: 'submitted' },
     ]
     const result = buildBehaviors(missions, teenMissions, { default: '' })
+    expect(result[2].status).toBe('locked')
+  })
+
+  it('sequência completa: 1 approved → 2 available → 2 approved → 3 available', () => {
+    const missions = [makeMission('m1'), makeMission('m2'), makeMission('m3')]
+    const teenMissions: TeenMissionInput[] = [
+      { mission_id: 'm1', status: 'approved' },
+      { mission_id: 'm2', status: 'approved' },
+    ]
+    const result = buildBehaviors(missions, teenMissions, { default: '' })
+    expect(result[0].status).toBe('completed')
+    expect(result[1].status).toBe('completed')
     expect(result[2].status).toBe('available')
   })
 

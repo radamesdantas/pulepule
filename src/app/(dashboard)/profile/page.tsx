@@ -10,7 +10,11 @@ export default async function ProfilePage() {
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  const role = profile?.role ?? user.user_metadata?.role ?? 'teen'
+
+  // Perfil pode ser null se o trigger de criação falhou — redireciona para onboarding
+  if (!profile) redirect('/onboarding')
+
+  const role = profile.role ?? user.user_metadata?.role ?? 'teen'
 
   const { data: xp } =
     role === 'teen'
@@ -27,11 +31,9 @@ export default async function ProfilePage() {
       {/* Avatar + stats */}
       <div className="bg-gradient-to-r from-teen-purple to-parent-blue rounded-2xl p-6 text-white text-center">
         <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-4xl font-black mx-auto mb-3">
-          {(profile?.name ?? user.user_metadata?.name ?? 'Usuário')?.[0]?.toUpperCase()}
+          {profile.name?.[0]?.toUpperCase() ?? '?'}
         </div>
-        <h2 className="text-xl font-black">
-          {profile?.name ?? user.user_metadata?.name ?? 'Usuário'}
-        </h2>
+        <h2 className="text-xl font-black">{profile.name}</h2>
         <p className="text-white/70 text-sm capitalize mt-1">
           {role === 'teen' ? '🦅 Adolescente' : role === 'parent' ? '👨‍👩‍👦 Pai/Mãe' : '🌟 Mentor'}
         </p>

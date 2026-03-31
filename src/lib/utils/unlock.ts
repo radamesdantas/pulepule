@@ -28,9 +28,8 @@ export function resolveBehaviorStatus(
     return 'available'
   }
   if (index === 0) return 'available'
-  if (prevTm && ['in_progress', 'submitted', 'rejected', 'approved'].includes(prevTm.status)) {
-    return 'available'
-  }
+  // Regra estrita: só aprovação pela IA desbloqueia o próximo comportamento
+  if (prevTm?.status === 'approved') return 'available'
   return 'locked'
 }
 

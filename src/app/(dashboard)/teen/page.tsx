@@ -4,7 +4,9 @@ import TeenGame from './TeenGame'
 
 export default async function TeenDashboard() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/auth/login')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
@@ -15,11 +17,14 @@ export default async function TeenDashboard() {
   const { data: xp } = await supabase.from('teen_xp').select('*').eq('teen_id', user.id).single()
 
   // Busca missões (comportamentos) com competência
+  // Ordenação: phase → month → competency_id → xp_reward garante sequência determinística
   const { data: allMissions } = await supabase
     .from('missions')
     .select('*, competency:competencies(id, name, icon, description, category)')
     .order('phase')
     .order('month')
+    .order('competency_id')
+    .order('xp_reward')
 
   // Progresso do teen
   const { data: teenMissions } = await supabase

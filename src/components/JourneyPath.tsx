@@ -1,7 +1,11 @@
 'use client'
 
+import CompetencyEagle from '@/components/CompetencyEagle'
+
 interface Behavior {
   id: string
+  number: number
+  total: number
   title: string
   competencyName: string
   competencyIcon: string
@@ -11,17 +15,8 @@ interface Behavior {
   index: number
 }
 
-function NodeConnector({ fromPos, toPos }: { fromPos: string; toPos: string }) {
-  // Conectores visuais entre nós do caminho
-  if (fromPos === toPos) {
-    return <div className="w-0.5 h-8 bg-gradient-to-b from-gray-700 to-gray-800 mx-auto" />
-  }
-  // Diagonal: linha leve indicando mudança de lado
-  return (
-    <div className="relative h-8 flex items-center justify-center">
-      <div className="w-0.5 h-full bg-gradient-to-b from-gray-700 to-gray-800 absolute left-1/2 -translate-x-1/2" />
-    </div>
-  )
+function NodeConnector() {
+  return <div className="w-0.5 h-8 bg-gradient-to-b from-gray-700 to-gray-800 mx-auto" />
 }
 
 interface Props {
@@ -30,7 +25,7 @@ interface Props {
 }
 
 export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
-  // Group by competency (every 3 behaviors)
+  // Agrupa por competência
   const groups: {
     competencyName: string
     competencyIcon: string
@@ -52,92 +47,133 @@ export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
     }
   })
 
-  // Snake pattern positions
+  // Posições snake para os nós (sem left/right extremo — espaço reservado para a águia)
   const positions = ['center', 'right', 'center', 'left'] as const
-  function getPosition(globalIndex: number) {
-    return positions[globalIndex % positions.length]
-  }
-
   let globalIndex = 0
 
   return (
     <div className="relative py-4">
-      {groups.map((group) => (
-        <div key={group.competencyCode}>
-          {/* Competency header */}
-          <div className="flex items-center justify-center gap-2 my-8 first:mt-0">
-            <div className="h-px bg-gray-700 flex-1" />
-            <div className="bg-gray-800 border border-gray-700 rounded-full px-4 py-2 flex items-center gap-2 shrink-0">
-              <span className="text-lg">{group.competencyIcon}</span>
-              <span className="text-sm font-bold text-white">{group.competencyName}</span>
-            </div>
-            <div className="h-px bg-gray-700 flex-1" />
-          </div>
+      {groups.map((group, groupIndex) => {
+        // ID numérico da competência extraído do competencyCode ("management-3" → 3)
+        const competencyId = parseInt(group.competencyCode.split('-')[1] ?? '1', 10)
 
-          {/* Behavior nodes */}
-          <div className="flex flex-col">
-            {group.items.map((behavior, itemIndex) => {
-              const currentPos = getPosition(globalIndex)
-              const nextPos = getPosition(globalIndex + 1)
-              globalIndex++
-              const alignment =
-                currentPos === 'left'
-                  ? 'mr-auto ml-8'
-                  : currentPos === 'right'
-                    ? 'ml-auto mr-8'
-                    : 'mx-auto'
+        // Águia alterna: grupos pares → esquerda, ímpares → direita
+        const eagleSide = groupIndex % 2 === 0 ? 'left' : 'right'
 
-              return (
-                <div key={behavior.id} className="flex flex-col items-center">
-                  <div className={`flex flex-col items-center w-fit ${alignment}`}>
-                    {/* Node */}
-                    <button
-                      onClick={() => behavior.status !== 'locked' && onSelectBehavior(behavior.id)}
-                      disabled={behavior.status === 'locked'}
-                      className={`relative w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all shadow-lg ${
-                        behavior.status === 'completed'
-                          ? 'bg-level-up text-white shadow-level-up/30'
-                          : behavior.status === 'in_progress'
-                            ? 'bg-parent-blue text-white shadow-parent-blue/30 ring-4 ring-parent-blue/30 animate-pulse'
-                            : behavior.status === 'available'
-                              ? 'bg-teen-purple text-white shadow-teen-purple/40 hover:scale-110 cursor-pointer ring-4 ring-teen-purple/20'
-                              : 'bg-gray-800 text-gray-600 cursor-not-allowed opacity-40 border border-gray-700'
-                      }`}
-                    >
-                      {behavior.status === 'completed'
-                        ? '✓'
-                        : behavior.status === 'locked'
-                          ? '🔒'
-                          : behavior.competencyIcon}
+        // Captura os índices dos nós deste grupo antes de iterar
+        const groupStartIndex = globalIndex
 
-                      {/* XP badge */}
-                      {behavior.status !== 'locked' && (
-                        <span className="absolute -bottom-1 -right-1 bg-xp-gold text-white text-[11px] font-black rounded-full px-1.5 py-0.5 shadow">
-                          +{behavior.xpReward}
-                        </span>
-                      )}
-                    </button>
+        const nodeElements = group.items.map((behavior, itemIndex) => {
+          const pos = positions[globalIndex % positions.length]
+          globalIndex++
 
-                    {/* Title */}
-                    <p
-                      className={`text-xs mt-2 text-center max-w-[120px] leading-tight ${
-                        behavior.status === 'locked' ? 'text-gray-600' : 'text-gray-300'
-                      }`}
-                    >
-                      {behavior.title}
-                    </p>
-                  </div>
+          // Alinhamento do nó — deixa espaço do lado onde a águia vai ficar
+          const alignment =
+            pos === 'left'
+              ? 'mr-auto ml-20' // distante da borda esquerda (onde pode ter águia)
+              : pos === 'right'
+                ? 'ml-auto mr-20' // distante da borda direita
+                : 'mx-auto'
 
-                  {/* Conector entre nós (exceto no último do grupo) */}
-                  {itemIndex < group.items.length - 1 && (
-                    <NodeConnector fromPos={currentPos} toPos={nextPos} />
+          return (
+            <div key={behavior.id} className="flex flex-col items-center">
+              <div className={`flex flex-col items-center w-fit ${alignment}`}>
+                {/* Nó */}
+                <button
+                  onClick={() => behavior.status !== 'locked' && onSelectBehavior(behavior.id)}
+                  disabled={behavior.status === 'locked'}
+                  className={`relative w-16 h-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg ${
+                    behavior.status === 'completed'
+                      ? 'bg-level-up text-white shadow-level-up/30'
+                      : behavior.status === 'in_progress'
+                        ? 'bg-parent-blue text-white shadow-parent-blue/30 ring-4 ring-parent-blue/30 animate-pulse'
+                        : behavior.status === 'available'
+                          ? 'bg-teen-purple text-white shadow-teen-purple/40 hover:scale-110 cursor-pointer ring-4 ring-teen-purple/20'
+                          : 'bg-gray-800 text-gray-600 cursor-not-allowed opacity-40 border border-gray-700'
+                  }`}
+                >
+                  {behavior.status === 'completed' ? (
+                    <>
+                      <span className="text-white text-xl leading-none">✓</span>
+                      <span className="text-white/70 text-[10px] font-black leading-none mt-0.5">
+                        #{behavior.number}
+                      </span>
+                    </>
+                  ) : behavior.status === 'locked' ? (
+                    <>
+                      <span className="text-gray-500 text-base leading-none">🔒</span>
+                      <span className="text-gray-600 text-[10px] font-black leading-none mt-0.5">
+                        #{behavior.number}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-white font-black text-base leading-none">
+                        {behavior.number}
+                      </span>
+                      <span className="text-white/70 text-base leading-none">
+                        {behavior.competencyIcon}
+                      </span>
+                    </>
                   )}
-                </div>
-              )
-            })}
+
+                  {/* XP badge */}
+                  {behavior.status !== 'locked' && (
+                    <span className="absolute -bottom-1 -right-1 bg-xp-gold text-white text-[11px] font-black rounded-full px-1.5 py-0.5 shadow">
+                      +{behavior.xpReward}
+                    </span>
+                  )}
+                </button>
+
+                {/* Título */}
+                <p
+                  className={`text-xs mt-2 text-center max-w-[100px] leading-tight ${
+                    behavior.status === 'locked' ? 'text-gray-600' : 'text-gray-300'
+                  }`}
+                >
+                  {behavior.title}
+                </p>
+              </div>
+
+              {/* Conector (exceto no último do grupo) */}
+              {itemIndex < group.items.length - 1 && <NodeConnector />}
+            </div>
+          )
+        })
+
+        // Suprimir warning de variável não usada
+        void groupStartIndex
+
+        return (
+          <div key={group.competencyCode} className="relative mb-6 mt-10 first:mt-2">
+            {/* Aguiazinha temática — posicionada ao lado do caminho, no centro vertical do grupo */}
+            <div
+              className={`absolute top-1/2 -translate-y-1/2 z-10 ${
+                eagleSide === 'left' ? 'left-0' : 'right-0'
+              }`}
+            >
+              <CompetencyEagle
+                competencyId={competencyId}
+                competencyName={group.competencyName}
+                size={80}
+              />
+            </div>
+
+            {/* Linha divisória com numeração */}
+            <div className="flex items-center gap-3 mb-6 px-2">
+              <div className="h-px bg-gray-800 flex-1" />
+              <span className="text-gray-600 text-[11px] font-mono tracking-widest uppercase">
+                {group.competencyName} · {group.items[0]?.number}–
+                {group.items[group.items.length - 1]?.number}
+              </span>
+              <div className="h-px bg-gray-800 flex-1" />
+            </div>
+
+            {/* Nós dos comportamentos */}
+            <div className="flex flex-col">{nodeElements}</div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

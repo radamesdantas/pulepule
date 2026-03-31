@@ -67,6 +67,8 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
     const comp = Array.isArray(m.competency) ? m.competency[0] : m.competency
     return {
       id: m.id,
+      number: i + 1, // número global 1-72
+      total: missions.length, // total para exibir "X de 72"
       title: m.title,
       description: m.description,
       example: m.example ?? b.example,

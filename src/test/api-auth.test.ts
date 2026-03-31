@@ -17,6 +17,10 @@ function canStartMission(role: Role | null): boolean {
   return role === 'teen'
 }
 
+function canStartMissionAsRole(role: Role | null): boolean {
+  return role === 'teen'
+}
+
 // ── Autorização mentor ────────────────────────────────────────────────────────
 
 describe('Autorização: mentor/missions/approve', () => {
@@ -46,6 +50,15 @@ describe('Autorização: missions/start (teen)', () => {
   it('teen pode iniciar missão', () => expect(canStartMission('teen')).toBe(true))
   it('parent NÃO pode iniciar missão', () => expect(canStartMission('parent')).toBe(false))
   it('mentor NÃO pode iniciar missão', () => expect(canStartMission('mentor')).toBe(false))
+})
+
+// ── Verificação de role via profile (novo check na route /start) ──────────────
+
+describe('Autorização: missions/start via profile.role', () => {
+  it('teen → autorizado', () => expect(canStartMissionAsRole('teen')).toBe(true))
+  it('parent → bloqueado (403)', () => expect(canStartMissionAsRole('parent')).toBe(false))
+  it('mentor → bloqueado (403)', () => expect(canStartMissionAsRole('mentor')).toBe(false))
+  it('null (sem profile) → bloqueado', () => expect(canStartMissionAsRole(null)).toBe(false))
 })
 
 // ── Cálculo de XP na aprovação do mentor ─────────────────────────────────────

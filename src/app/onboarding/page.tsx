@@ -79,6 +79,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0)
   const [role, setRole] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [onboardingError, setOnboardingError] = useState('')
 
   // Carrega o papel do usuário
   useEffect(() => {
@@ -109,7 +110,7 @@ export default function OnboardingPage() {
     const userName = user.user_metadata?.name ?? user.email?.split('@')[0] ?? 'Usuário'
 
     // Garante que o profile existe antes de navegar para o dashboard
-    await supabase.from('profiles').upsert(
+    const { error: profileError } = await supabase.from('profiles').upsert(
       {
         id: user.id,
         email: user.email,
@@ -119,9 +120,14 @@ export default function OnboardingPage() {
       { onConflict: 'id' }
     )
 
+    if (profileError) {
+      setOnboardingError('Erro ao criar perfil. Tente novamente.')
+      return
+    }
+
     // Cria registro de XP para teens
     if (userRole === 'teen') {
-      await supabase.from('teen_xp').upsert(
+      const { error: xpError } = await supabase.from('teen_xp').upsert(
         {
           teen_id: user.id,
           total_xp: 0,
@@ -134,6 +140,11 @@ export default function OnboardingPage() {
         },
         { onConflict: 'teen_id' }
       )
+
+      if (xpError) {
+        setOnboardingError('Erro ao inicializar progresso. Tente novamente.')
+        return
+      }
     }
 
     // Marca onboarding como completo
@@ -190,6 +201,12 @@ export default function OnboardingPage() {
 
         <h2 className="text-2xl font-black text-gray-800 mb-3">{current.title}</h2>
         <p className="text-gray-500 leading-relaxed mb-8">{current.body}</p>
+
+        {onboardingError && (
+          <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm mb-4">
+            {onboardingError}
+          </div>
+        )}
 
         <button
           onClick={handleNext}

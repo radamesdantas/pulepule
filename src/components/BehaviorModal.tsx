@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 
 interface BehaviorData {
   id: string
+  number: number
+  total: number
   title: string
   description: string
   example: string
@@ -25,13 +27,14 @@ interface Props {
 }
 
 export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: Props) {
-  const [uploading, setUploading] = useState(false)
-  const [description, setDescription] = useState('')
-  const [fileName, setFileName] = useState<string | null>(null)
-  const [evidenceUrl, setEvidenceUrl] = useState<string | null>(null)
+  const [narration, setNarration] = useState('')
   const [loading, setLoading] = useState(false)
+  const [validating, setValidating] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
+  const [rejected, setRejected] = useState(false)
+  const [rejectionFeedback, setRejectionFeedback] = useState('')
+  const [approved, setApproved] = useState(false)
+  const [xpGained, setXpGained] = useState(0)
   const [localStatus, setLocalStatus] = useState<string | null>(null)
 
   if (!behavior) return null
@@ -42,38 +45,12 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
     | 'in_progress'
     | 'completed'
 
-  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file || !behavior) return
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Arquivo muito grande. Max 10MB.')
-      return
-    }
-
-    setUploading(true)
-    setError('')
-    const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `${userId}/${behavior.id}-${Date.now()}.${ext}`
-    const { data, error: err } = await supabase.storage
-      .from('evidence')
-      .upload(path, file, { upsert: true })
-    if (err) {
-      setError('Erro no upload.')
-      setUploading(false)
-      return
-    }
-    const { data: urlData } = supabase.storage.from('evidence').getPublicUrl(data.path)
-    setEvidenceUrl(urlData.publicUrl)
-    setFileName(file.name)
-    setUploading(false)
-  }
-
   async function handleStart() {
     if (!behavior?.missionId) return
     setLoading(true)
+    setError('')
     const supabase = createClient()
-    await supabase.from('teen_missions').upsert(
+    const { error: err } = await supabase.from('teen_missions').upsert(
       {
         teen_id: userId,
         mission_id: behavior.missionId,
@@ -82,34 +59,57 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
       { onConflict: 'teen_id,mission_id' }
     )
     setLoading(false)
+    if (err) {
+      setError('Erro ao iniciar comportamento. Tente novamente.')
+      return
+    }
     setLocalStatus('in_progress')
     onRefresh()
   }
 
-  async function handleSubmitEvidence() {
-    if (!behavior?.missionId || description.trim().length < 20) {
+  async function handleValidate() {
+    if (!behavior?.missionId) return
+    if (narration.trim().length < 20) {
       setError('Descreva com pelo menos 20 caracteres.')
       return
     }
-    setLoading(true)
+
+    setValidating(true)
     setError('')
-    const supabase = createClient()
-    await supabase.from('teen_missions').upsert(
-      {
-        teen_id: userId,
-        mission_id: behavior.missionId,
-        status: 'submitted',
-        evidence_description: description.trim(),
-        evidence_url: evidenceUrl,
-      },
-      { onConflict: 'teen_id,mission_id' }
-    )
-    setSuccess(true)
-    setLoading(false)
-    setTimeout(() => {
-      onRefresh()
-      onClose()
-    }, 2000)
+    setRejected(false)
+    setRejectionFeedback('')
+
+    try {
+      const res = await fetch(`/api/missions/${behavior.missionId}/validate-narration`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ narration: narration.trim() }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error ?? 'Erro ao validar. Tente novamente.')
+        setValidating(false)
+        return
+      }
+
+      if (data.approved) {
+        setXpGained(data.xpReward ?? behavior.xpReward)
+        setApproved(true)
+        setTimeout(() => {
+          onRefresh()
+          onClose()
+        }, 3000)
+      } else {
+        setRejected(true)
+        setRejectionFeedback(data.feedback ?? 'Tente detalhar melhor sua narração.')
+      }
+    } catch {
+      setError('Erro de conexão. Tente novamente.')
+    }
+
+    setValidating(false)
   }
 
   return (
@@ -130,9 +130,14 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
           >
             ✕
           </button>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl">{behavior.competencyIcon}</span>
-            <span className="text-white/70 text-sm font-semibold">{behavior.competencyName}</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{behavior.competencyIcon}</span>
+              <span className="text-white/70 text-sm font-semibold">{behavior.competencyName}</span>
+            </div>
+            <span className="bg-white/20 rounded-full px-2.5 py-0.5 text-xs font-black text-white/90 tabular-nums">
+              #{behavior.number} <span className="font-normal opacity-60">/ {behavior.total}</span>
+            </span>
           </div>
           <h2 className="text-xl font-black text-white tracking-display font-outfit">
             {behavior.title}
@@ -142,13 +147,17 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
           </div>
         </div>
 
-        {success ? (
+        {/* Aprovado pela IA */}
+        {approved ? (
           <div className="p-8 text-center">
             <div className="text-5xl mb-3">🎉</div>
             <h3 className="text-xl font-black text-white mb-1 tracking-display font-outfit">
-              Evidência enviada!
+              Comportamento aprovado!
             </h3>
-            <p className="text-gray-400 text-sm">Seu mentor vai avaliar em breve.</p>
+            <div className="mt-3 inline-flex items-center gap-1 bg-xp-gold/20 border border-xp-gold/30 rounded-full px-4 py-2 text-xp-gold font-black text-lg">
+              +{xpGained} XP
+            </div>
+            <p className="text-gray-400 text-sm mt-3">Sua jornada continua. Bom trabalho!</p>
           </div>
         ) : (
           <div className="p-5 space-y-4">
@@ -158,7 +167,18 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
               </div>
             )}
 
-            {/* 1. Descrição */}
+            {/* Feedback de rejeição */}
+            {rejected && rejectionFeedback && (
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">💬</span>
+                  <h3 className="font-bold text-amber-300 text-sm">Precisa melhorar</h3>
+                </div>
+                <p className="text-amber-200/80 text-sm leading-relaxed">{rejectionFeedback}</p>
+              </div>
+            )}
+
+            {/* Descrição da missão */}
             <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">📋</span>
@@ -167,16 +187,20 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
               <p className="text-gray-300 text-sm leading-relaxed">{behavior.description}</p>
             </div>
 
-            {/* 2. Exemplo */}
-            <div className="bg-amber-500/10 rounded-2xl p-4 border border-amber-500/20">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-lg">💡</span>
-                <h3 className="font-bold text-amber-300 text-sm">Exemplo prático</h3>
+            {/* Exemplo */}
+            {behavior.example && (
+              <div className="bg-amber-500/10 rounded-2xl p-4 border border-amber-500/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">💡</span>
+                  <h3 className="font-bold text-amber-300 text-sm">Exemplo prático</h3>
+                </div>
+                <p className="text-amber-200/80 text-sm leading-relaxed italic">
+                  {behavior.example}
+                </p>
               </div>
-              <p className="text-amber-200/80 text-sm leading-relaxed italic">{behavior.example}</p>
-            </div>
+            )}
 
-            {/* 3. Baú de XP */}
+            {/* Baú de XP */}
             <div className="bg-xp-gold/10 rounded-2xl p-4 border border-xp-gold/20 text-center">
               <span className="text-4xl">{currentStatus === 'completed' ? '✅' : '🎁'}</span>
               <p className="text-xp-gold font-black text-2xl mt-1">
@@ -185,64 +209,31 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
               <p className="text-gray-400 text-xs mt-1">
                 {currentStatus === 'completed'
                   ? 'Parabéns pela conquista!'
-                  : 'Ganhe XP ao completar'}
+                  : 'Aprovado pela IA ao completar'}
               </p>
             </div>
 
-            {/* 4. Evidência */}
+            {/* Campo de narração (só quando in_progress) */}
             {currentStatus === 'in_progress' && (
               <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-lg">📸</span>
-                  <h3 className="font-bold text-white text-sm">Enviar evidência</h3>
+                  <span className="text-lg">✍️</span>
+                  <h3 className="font-bold text-white text-sm">Narre o que você fez</h3>
                 </div>
 
                 <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Descreva o que você fez e como praticou este comportamento..."
-                  rows={3}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-teen-purple resize-none mb-3"
+                  value={narration}
+                  onChange={(e) => {
+                    setNarration(e.target.value)
+                    if (rejected) setRejected(false)
+                  }}
+                  placeholder="Descreva especificamente o que você fez, como executou e qual foi o resultado ou impacto..."
+                  rows={4}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-teen-purple resize-none"
                 />
-
-                {fileName ? (
-                  <div className="flex items-center gap-2 bg-level-up/10 border border-level-up/20 rounded-xl px-3 py-2">
-                    <span className="text-level-up">✅</span>
-                    <span className="text-sm text-level-up truncate flex-1">{fileName}</span>
-                    <button
-                      onClick={() => {
-                        setFileName(null)
-                        setEvidenceUrl(null)
-                      }}
-                      className="text-xs text-gray-500 hover:text-red-400"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ) : (
-                  <label className="flex flex-col items-center gap-1 border border-dashed border-gray-600 rounded-xl py-5 cursor-pointer hover:border-teen-purple transition-colors">
-                    <span className="text-2xl">📎</span>
-                    <span className="text-xs text-gray-400">
-                      {uploading ? 'Enviando...' : 'Foto, vídeo ou PDF (max 10MB)'}
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*,video/*,.pdf"
-                      onChange={handleFileUpload}
-                      disabled={uploading}
-                      className="hidden"
-                    />
-                  </label>
-                )}
-              </div>
-            )}
-
-            {currentStatus === 'completed' && behavior.evidenceUrl && (
-              <div className="bg-level-up/10 rounded-2xl p-4 border border-level-up/20">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">✅</span>
-                  <h3 className="font-bold text-level-up text-sm">Evidência enviada</h3>
-                </div>
+                <p className="text-xs text-gray-500 mt-1 text-right">
+                  {narration.length} caracteres (mínimo 20)
+                </p>
               </div>
             )}
 
@@ -250,13 +241,13 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
               <div className="bg-parent-blue/10 rounded-2xl p-4 border border-parent-blue/20">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-lg">💬</span>
-                  <h3 className="font-bold text-parent-blue text-sm">Feedback do mentor</h3>
+                  <h3 className="font-bold text-parent-blue text-sm">Feedback recebido</h3>
                 </div>
                 <p className="text-blue-200/80 text-sm">{behavior.mentorFeedback}</p>
               </div>
             )}
 
-            {/* 5. Action button */}
+            {/* Botões de ação */}
             <div className="pt-2">
               {currentStatus === 'available' && (
                 <button
@@ -274,22 +265,26 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
                   )}
                 </button>
               )}
+
               {currentStatus === 'in_progress' && (
                 <button
-                  onClick={handleSubmitEvidence}
-                  disabled={loading || description.trim().length < 20}
+                  onClick={handleValidate}
+                  disabled={validating || narration.trim().length < 20}
                   className="w-full bg-gradient-to-r from-teen-purple to-parent-blue text-white font-bold text-base py-4 rounded-2xl hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {loading ? (
+                  {validating ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Enviando...
+                      Analisando com IA...
                     </span>
+                  ) : rejected ? (
+                    'Tentar novamente 🔄'
                   ) : (
-                    'Enviar Evidência 📤'
+                    'Validar com IA ✨'
                   )}
                 </button>
               )}
+
               {currentStatus === 'completed' && (
                 <div className="text-center py-3">
                   <span className="bg-level-up/20 text-level-up font-bold text-sm px-6 py-2 rounded-full">
@@ -297,6 +292,7 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
                   </span>
                 </div>
               )}
+
               {currentStatus === 'locked' && (
                 <p className="text-center text-gray-500 text-sm py-3">
                   🔒 Complete o anterior para desbloquear
