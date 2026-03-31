@@ -47,6 +47,19 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
 
   async function handleStart() {
     if (!behavior?.missionId) return
+    // Se já tem narração suficiente, inicia e valida em um passo
+    if (narration.trim().length >= 20) {
+      const supabase = createClient()
+      await supabase
+        .from('teen_missions')
+        .upsert(
+          { teen_id: userId, mission_id: behavior.missionId, status: 'in_progress' },
+          { onConflict: 'teen_id,mission_id' }
+        )
+      setLocalStatus('in_progress')
+      await handleValidate()
+      return
+    }
     setLoading(true)
     setError('')
     const supabase = createClient()
@@ -213,8 +226,8 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
               </p>
             </div>
 
-            {/* Campo de narração (só quando in_progress) */}
-            {currentStatus === 'in_progress' && (
+            {/* Campo de narração (available e in_progress) */}
+            {(currentStatus === 'available' || currentStatus === 'in_progress') && (
               <div className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">✍️</span>
@@ -252,14 +265,16 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
               {currentStatus === 'available' && (
                 <button
                   onClick={handleStart}
-                  disabled={loading}
-                  className="w-full bg-teen-purple text-white font-bold text-base py-4 rounded-2xl hover:bg-purple-600 transition-all active:scale-95 disabled:opacity-50"
+                  disabled={loading || validating}
+                  className="w-full bg-gradient-to-r from-teen-purple to-parent-blue text-white font-bold text-base py-4 rounded-2xl hover:opacity-90 transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {loading ? (
+                  {loading || validating ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Iniciando...
+                      {validating ? 'Analisando com IA...' : 'Iniciando...'}
                     </span>
+                  ) : narration.trim().length >= 20 ? (
+                    'Validar com IA ✨'
                   ) : (
                     'Iniciar Comportamento 🚀'
                   )}
