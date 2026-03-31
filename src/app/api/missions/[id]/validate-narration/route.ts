@@ -110,16 +110,19 @@ Compare a narrativa com os dois campos de referência acima ("O que fazer" e "Ex
 
 APROVE somente se:
 1. O participante descreveu uma ação REAL que ele fez (não apenas planejou)
-2. O comportamento descrito é COERENTE com "O que fazer" — mesma direção, mesmo princípio
-3. Se houver "Exemplo prático", a narrativa segue a mesma lógica do exemplo (pode ser diferente em detalhes, mas não pode contradizer o espírito do exemplo)
+2. O comportamento descrito está ALINHADO com "O que fazer" — mesma direção, mesmo princípio
+3. Se houver "Exemplo prático", a narrativa segue a mesma lógica (pode usar situação diferente, mas o princípio aplicado deve ser o mesmo)
 4. Tem pelo menos 2 frases com detalhes concretos
 
-REJEITE se:
-- A narrativa contradiz "O que fazer" (ex: missão pede adaptar comunicação por pessoa, teen descreve tratando todos igual)
-- A narrativa inverte a lógica do "Exemplo prático" (ex: exemplo mostra ser direto com quem é direto, teen descreve o oposto)
+REJEITE se qualquer uma das condições abaixo for verdadeira:
+- A narrativa CONTRADIZ "O que fazer" (descreve o oposto do comportamento esperado)
+- A narrativa DESVIA do esperado — menciona o tema mas aplica de forma incorreta, incompleta ou diferente do princípio ensinado
+- A narrativa IGNORA elementos essenciais do comportamento (ex: missão pede adaptação individual mas o teen descreve ação genérica igual para todos)
+- A narrativa inverte a lógica do "Exemplo prático"
 - For claramente inventado, fora do tema ou vago demais para avaliar
 
-Aprovar comportamento errado não ajuda o jovem a crescer. Seja preciso na avaliação e gentil no feedback.
+Para aprovar, a narrativa precisa demonstrar que o participante ENTENDEU e APLICOU o comportamento corretamente — não apenas que fez algo relacionado ao tema.
+Aprovar comportamento errado ou desviado não ajuda o jovem a crescer. Seja preciso e gentil.
 
 Responda APENAS com JSON válido, sem markdown, sem texto adicional:
 {"approved": true, "feedback": "Parabéns! [elogio específico em 1 frase]"}
