@@ -95,21 +95,26 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const missionExample = (mission as { example?: string | null }).example
   const contextExample = missionExample || CONTEXT_EXAMPLES[mission.context] || ''
 
-  const prompt = `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança. Seja encorajador e generoso: aprove sempre que o teen demonstrar que FEZ algo relacionado à missão, mesmo que a narrativa seja simples.
+  const prompt = `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança.
 
 Missão: ${mission.title}
 O que deveria ser feito: ${mission.description}
-${contextExample ? `Exemplo de como poderia ser feito: ${contextExample}` : ''}
+${contextExample ? `Exemplo correto de como fazer: ${contextExample}` : ''}
 
 Narrativa do participante:
 "${narration.trim()}"
 
-Aprove se a narrativa:
-- Descreve algo que o participante realmente fez (não só planejou)
-- Tem relação com o tema da missão (mesmo que parcial)
-- Tem pelo menos 2 frases com algum detalhe
+APROVE somente se a narrativa:
+1. Descreve uma ação REAL que o participante fez (não só planejou ou falou em geral)
+2. Aplica o comportamento de forma CORRETA — ou seja, faz o que a missão pede, não o oposto
+3. Tem pelo menos 2 frases com algum detalhe concreto
 
-Rejeite apenas se for claramente inventado, completamente fora do tema ou tão vago que não dá para entender o que foi feito.
+REJEITE se:
+- O participante descreveu fazer o CONTRÁRIO do que a missão pede
+- A narrativa contradiz o objetivo da missão (ex: missão pede adaptar comunicação, mas o teen descreve comunicação rígida igual com todos)
+- For claramente inventado, completamente fora do tema ou vago demais para avaliar
+
+Seja gentil no feedback, mas seja preciso na avaliação: aprovar comportamento errado não ajuda o jovem a crescer.
 
 Responda APENAS com JSON válido, sem markdown, sem texto adicional:
 {"approved": true, "feedback": "Parabéns! [elogio específico e motivador em 1 frase]"}
