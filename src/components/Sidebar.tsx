@@ -116,7 +116,7 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-gray-900 border-t border-gray-800">
         <div className="flex items-center justify-around px-1 py-1">
-          {navItems.slice(0, 5).map((item) => {
+          {navItems.slice(0, 4).map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== '/teen' &&
@@ -136,6 +136,14 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
               </Link>
             )
           })}
+          {/* Logout */}
+          <button
+            onClick={handleSignOut}
+            className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors text-gray-500 hover:text-red-400"
+          >
+            <span className="text-xl">🚪</span>
+            <span className="text-[10px] font-semibold">Sair</span>
+          </button>
         </div>
       </nav>
     </>

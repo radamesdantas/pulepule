@@ -44,8 +44,8 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-5">
-      <h3 className="font-black text-gray-800">Editar Informações</h3>
+    <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 space-y-5">
+      <h3 className="font-black text-white">Editar Informações</h3>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl px-4 py-3 text-sm">
@@ -60,27 +60,27 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Nome</label>
+          <label className="block text-sm font-semibold text-gray-400 mb-1.5">Nome</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:border-teen-purple transition-colors"
+            className="w-full bg-gray-800 border-2 border-gray-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-teen-purple transition-colors"
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+          <label className="block text-sm font-semibold text-gray-400 mb-1.5">Email</label>
           <input
             type="email"
             value={profile.email}
             disabled
-            className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 text-gray-400 text-sm bg-gray-50 cursor-not-allowed"
+            className="w-full bg-gray-800 border-2 border-gray-700 rounded-xl px-4 py-3 text-gray-500 text-sm cursor-not-allowed"
           />
-          <p className="text-xs text-gray-400 mt-1">O email não pode ser alterado.</p>
+          <p className="text-xs text-gray-600 mt-1">O email não pode ser alterado.</p>
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Papel</label>
+          <label className="block text-sm font-semibold text-gray-400 mb-1.5">Papel</label>
           <input
             type="text"
             value={
@@ -91,7 +91,7 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
                   : '🌟 Mentor'
             }
             disabled
-            className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 text-gray-400 text-sm bg-gray-50 cursor-not-allowed"
+            className="w-full bg-gray-800 border-2 border-gray-700 rounded-xl px-4 py-3 text-gray-500 text-sm cursor-not-allowed"
           />
         </div>
         <button
@@ -103,10 +103,10 @@ export default function ProfileForm({ profile }: { profile: Profile }) {
         </button>
       </form>
 
-      <div className="pt-3 border-t border-gray-100">
+      <div className="pt-3 border-t border-gray-800">
         <button
           onClick={handleSignOut}
-          className="w-full text-red-500 font-semibold text-sm py-2 rounded-xl hover:bg-red-50 transition-colors"
+          className="w-full text-red-400 font-semibold text-sm py-2 rounded-xl hover:bg-red-500/10 transition-colors"
         >
           Sair da conta
         </button>
