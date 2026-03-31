@@ -48,15 +48,41 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     .single()
   if (!mission) return NextResponse.json({ error: 'Missão não encontrada' }, { status: 404 })
 
-  // Verifica que a teen_mission está in_progress
+  // Busca ou cria o registro de teen_mission (auto-start se ainda não iniciou)
+  const { data: tmExisting } = await supabase
+    .from('teen_missions')
+    .select('id, status')
+    .eq('teen_id', user.id)
+    .eq('mission_id', missionId)
+    .single()
+
+  // Já aprovado — não precisa validar de novo
+  if (tmExisting?.status === 'approved') {
+    return NextResponse.json({ error: 'Comportamento já foi aprovado.' }, { status: 400 })
+  }
+
+  // Se não existe ou está available, cria/atualiza para in_progress automaticamente
+  if (!tmExisting || tmExisting.status === 'available') {
+    const { error: upsertErr } = await supabase
+      .from('teen_missions')
+      .upsert(
+        { teen_id: user.id, mission_id: missionId, status: 'in_progress' },
+        { onConflict: 'teen_id,mission_id' }
+      )
+    if (upsertErr) {
+      return NextResponse.json({ error: 'Erro ao iniciar missão.' }, { status: 500 })
+    }
+  }
+
+  // Re-busca para pegar o id atualizado
   const { data: tm } = await supabase
     .from('teen_missions')
     .select('id, status')
     .eq('teen_id', user.id)
     .eq('mission_id', missionId)
     .single()
-  if (!tm || tm.status !== 'in_progress') {
-    return NextResponse.json({ error: 'Missão não está em progresso' }, { status: 400 })
+  if (!tm) {
+    return NextResponse.json({ error: 'Erro ao registrar missão.' }, { status: 500 })
   }
 
   // Chama Claude Haiku para validar a narração

@@ -47,30 +47,22 @@ export default function BehaviorModal({ behavior, userId, onClose, onRefresh }: 
 
   async function handleStart() {
     if (!behavior?.missionId) return
-    // Se já tem narração suficiente, inicia e valida em um passo
+    // Se já tem narração suficiente, valida direto — a API faz o auto-start
     if (narration.trim().length >= 20) {
-      const supabase = createClient()
-      await supabase
-        .from('teen_missions')
-        .upsert(
-          { teen_id: userId, mission_id: behavior.missionId, status: 'in_progress' },
-          { onConflict: 'teen_id,mission_id' }
-        )
       setLocalStatus('in_progress')
       await handleValidate()
       return
     }
+    // Sem narração suficiente: apenas inicia a missão
     setLoading(true)
     setError('')
     const supabase = createClient()
-    const { error: err } = await supabase.from('teen_missions').upsert(
-      {
-        teen_id: userId,
-        mission_id: behavior.missionId,
-        status: 'in_progress',
-      },
-      { onConflict: 'teen_id,mission_id' }
-    )
+    const { error: err } = await supabase
+      .from('teen_missions')
+      .upsert(
+        { teen_id: userId, mission_id: behavior.missionId, status: 'in_progress' },
+        { onConflict: 'teen_id,mission_id' }
+      )
     setLoading(false)
     if (err) {
       setError('Erro ao iniciar comportamento. Tente novamente.')
