@@ -40,10 +40,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'Narração muito curta.' }, { status: 400 })
   }
 
-  // Busca dados da missão
+  // Busca dados da missão (inclui example para usar no prompt)
   const { data: mission } = await supabase
     .from('missions')
-    .select('title, description, context, xp_reward')
+    .select('title, description, context, xp_reward, example')
     .eq('id', missionId)
     .single()
   if (!mission) return NextResponse.json({ error: 'Missão não encontrada' }, { status: 404 })
@@ -61,33 +61,36 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   // Chama Claude Haiku para validar a narração
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-  const contextExample = CONTEXT_EXAMPLES[mission.context] ?? ''
+  // Usa o exemplo específico da missão; fallback para o mapa genérico por contexto
+  const missionExample = (mission as { example?: string | null }).example
+  const contextExample = missionExample || CONTEXT_EXAMPLES[mission.context] || ''
 
   const message = await anthropic.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 256,
+    max_tokens: 300,
     messages: [
       {
         role: 'user',
-        content: `Você avalia narrativas de comportamento de adolescentes em um programa de desenvolvimento de liderança.
+        content: `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança. Seja encorajador e generoso: aprove sempre que o teen demonstrar que FEZ algo relacionado à missão, mesmo que a narrativa seja simples.
 
 Missão: ${mission.title}
 O que deveria ser feito: ${mission.description}
-Exemplo de entrega esperada: ${contextExample}
+${contextExample ? `Exemplo de como poderia ser feito: ${contextExample}` : ''}
 
-Narração do participante:
+Narrativa do participante:
 "${narration.trim()}"
 
-Critérios de aprovação (todos devem ser atendidos):
-1. Descreve uma ação concreta realizada (não apenas intenção ou plano)
-2. É coerente com o contexto e objetivo da missão
-3. Contém detalhes específicos (não é vaga ou genérica)
-4. Demonstra que o participante teve papel ativo
+Aprove se a narrativa:
+- Descreve algo que o participante realmente fez (não só planejou)
+- Tem relação com o tema da missão (mesmo que parcial)
+- Tem pelo menos 2 frases com algum detalhe
+
+Rejeite apenas se for claramente inventado, completamente fora do tema ou tão vago que não dá para entender o que foi feito.
 
 Responda APENAS com JSON válido, sem texto adicional:
-{"approved": true, "feedback": "Parabéns! [elogio específico curto]"}
+{"approved": true, "feedback": "Parabéns! [elogio específico e motivador em 1 frase]"}
 ou
-{"approved": false, "feedback": "[orientação clara do que melhorar, máximo 2 frases]"}`,
+{"approved": false, "feedback": "[dica clara e gentil do que melhorar, máximo 2 frases]"}`,
       },
     ],
   })
