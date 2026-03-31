@@ -115,7 +115,7 @@ export default function Home() {
       </section>
 
       {/* ── PARA QUEM É ────────────────────────────────────────── */}
-      <section className="py-16 bg-violet-900">
+      <section className="py-16 bg-violet-950">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-6">
             {[
@@ -137,7 +137,7 @@ export default function Home() {
             ].map(({ icon, title, desc }) => (
               <div
                 key={title}
-                className="bg-violet-900/60 rounded-3xl p-6 border border-violet-700"
+                className="bg-violet-950/60 rounded-3xl p-6 border border-violet-700"
               >
                 <div className="text-4xl mb-3">{icon}</div>
                 <h3 className="font-black text-white mb-2 font-outfit">{title}</h3>
@@ -236,7 +236,7 @@ export default function Home() {
       </section>
 
       {/* ── JORNADA 12 MESES ───────────────────────────────────── */}
-      <section className="py-24 bg-violet-900">
+      <section className="py-24 bg-violet-950">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-teen-purple/10 text-teen-purple rounded-full px-4 py-2 text-sm font-bold mb-4">
@@ -287,7 +287,7 @@ export default function Home() {
             ].map(({ fase, meses, titulo, cor, emoji, desc }) => (
               <div
                 key={fase}
-                className="bg-violet-900/60 rounded-3xl overflow-hidden border border-violet-700"
+                className="bg-violet-950/60 rounded-3xl overflow-hidden border border-violet-700"
               >
                 <div className={`bg-gradient-to-br ${cor} p-5 text-white`}>
                   <div className="text-3xl mb-2">{emoji}</div>
@@ -306,7 +306,7 @@ export default function Home() {
           </div>
 
           {/* 24 competências */}
-          <div className="bg-violet-900/60 rounded-3xl p-8 border border-violet-700">
+          <div className="bg-violet-950/60 rounded-3xl p-8 border border-violet-700">
             <h3 className="font-black text-white text-xl mb-6 text-center tracking-display font-outfit">
               24 Competências Desenvolvidas
             </h3>
@@ -425,7 +425,7 @@ export default function Home() {
       </section>
 
       {/* ── PAIS ───────────────────────────────────────────────── */}
-      <section className="py-24 bg-violet-900">
+      <section className="py-24 bg-violet-950">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -472,7 +472,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="bg-violet-900/60 rounded-3xl p-6 border border-violet-700">
+            <div className="bg-violet-950/60 rounded-3xl p-6 border border-violet-700">
               <div className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
                 Dashboard dos Pais
               </div>
@@ -538,7 +538,7 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────────── */}
-      <footer className="py-8 bg-violet-900 text-gray-400 text-center text-sm">
+      <footer className="py-8 bg-violet-950 text-gray-400 text-center text-sm">
         <div className="flex items-center justify-center gap-1.5 mb-3">
           <EagleMascot width={24} height={28.8} animate={false} />
           <span className="font-black text-white font-outfit">Pule Pule</span>
@@ -574,7 +574,7 @@ function FeatureCard({
   items: { icon: string; title: string; desc: string }[]
 }) {
   return (
-    <div className="bg-violet-900/60 border border-violet-700 rounded-3xl p-8">
+    <div className="bg-violet-950/60 border border-violet-700 rounded-3xl p-8">
       <div
         className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center text-2xl mb-5`}
       >
