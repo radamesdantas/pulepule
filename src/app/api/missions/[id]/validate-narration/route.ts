@@ -97,29 +97,34 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const prompt = `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança.
 
-Missão: ${mission.title}
-O que deveria ser feito: ${mission.description}
-${contextExample ? `Exemplo correto de como fazer: ${contextExample}` : ''}
+=== REFERÊNCIA DA MISSÃO ===
+Título: ${mission.title}
+O que fazer: ${mission.description}
+${contextExample ? `Exemplo prático (como deveria ser feito): ${contextExample}` : ''}
 
-Narrativa do participante:
+=== NARRATIVA DO PARTICIPANTE ===
 "${narration.trim()}"
 
-APROVE somente se a narrativa:
-1. Descreve uma ação REAL que o participante fez (não só planejou ou falou em geral)
-2. Aplica o comportamento de forma CORRETA — ou seja, faz o que a missão pede, não o oposto
-3. Tem pelo menos 2 frases com algum detalhe concreto
+=== CRITÉRIOS DE AVALIAÇÃO ===
+Compare a narrativa com os dois campos de referência acima ("O que fazer" e "Exemplo prático").
+
+APROVE somente se:
+1. O participante descreveu uma ação REAL que ele fez (não apenas planejou)
+2. O comportamento descrito é COERENTE com "O que fazer" — mesma direção, mesmo princípio
+3. Se houver "Exemplo prático", a narrativa segue a mesma lógica do exemplo (pode ser diferente em detalhes, mas não pode contradizer o espírito do exemplo)
+4. Tem pelo menos 2 frases com detalhes concretos
 
 REJEITE se:
-- O participante descreveu fazer o CONTRÁRIO do que a missão pede
-- A narrativa contradiz o objetivo da missão (ex: missão pede adaptar comunicação, mas o teen descreve comunicação rígida igual com todos)
-- For claramente inventado, completamente fora do tema ou vago demais para avaliar
+- A narrativa contradiz "O que fazer" (ex: missão pede adaptar comunicação por pessoa, teen descreve tratando todos igual)
+- A narrativa inverte a lógica do "Exemplo prático" (ex: exemplo mostra ser direto com quem é direto, teen descreve o oposto)
+- For claramente inventado, fora do tema ou vago demais para avaliar
 
-Seja gentil no feedback, mas seja preciso na avaliação: aprovar comportamento errado não ajuda o jovem a crescer.
+Aprovar comportamento errado não ajuda o jovem a crescer. Seja preciso na avaliação e gentil no feedback.
 
 Responda APENAS com JSON válido, sem markdown, sem texto adicional:
-{"approved": true, "feedback": "Parabéns! [elogio específico e motivador em 1 frase]"}
+{"approved": true, "feedback": "Parabéns! [elogio específico em 1 frase]"}
 ou
-{"approved": false, "feedback": "[dica clara e gentil do que melhorar, máximo 2 frases]"}`
+{"approved": false, "feedback": "[explique em 1-2 frases o que está errado e como corrigir]"}`
 
   let raw: string
   try {
