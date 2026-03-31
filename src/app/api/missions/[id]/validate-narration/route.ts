@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 const CONTEXT_EXAMPLES: Record<string, string> = {
   escola:
@@ -88,21 +88,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: 'Erro ao registrar missão.' }, { status: 500 })
   }
 
-  // Chama Claude Haiku para validar a narração
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  // Chama Gemini para validar a narração
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '')
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+
   // Usa o exemplo específico da missão; fallback para o mapa genérico por contexto
   const missionExample = (mission as { example?: string | null }).example
   const contextExample = missionExample || CONTEXT_EXAMPLES[mission.context] || ''
 
-  let raw: string
-  try {
-    const message = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 300,
-      messages: [
-        {
-          role: 'user',
-          content: `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança. Seja encorajador e generoso: aprove sempre que o teen demonstrar que FEZ algo relacionado à missão, mesmo que a narrativa seja simples.
+  const prompt = `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança. Seja encorajador e generoso: aprove sempre que o teen demonstrar que FEZ algo relacionado à missão, mesmo que a narrativa seja simples.
 
 Missão: ${mission.title}
 O que deveria ser feito: ${mission.description}
@@ -118,18 +112,26 @@ Aprove se a narrativa:
 
 Rejeite apenas se for claramente inventado, completamente fora do tema ou tão vago que não dá para entender o que foi feito.
 
-Responda APENAS com JSON válido, sem texto adicional:
+Responda APENAS com JSON válido, sem markdown, sem texto adicional:
 {"approved": true, "feedback": "Parabéns! [elogio específico e motivador em 1 frase]"}
 ou
-{"approved": false, "feedback": "[dica clara e gentil do que melhorar, máximo 2 frases]"}`,
-        },
-      ],
-    })
-    raw = message.content[0].type === 'text' ? message.content[0].text.trim() : '{}'
+{"approved": false, "feedback": "[dica clara e gentil do que melhorar, máximo 2 frases]"}`
+
+  let raw: string
+  try {
+    const result = await model.generateContent(prompt)
+    raw = result.response.text().trim()
+    // Remove possíveis blocos markdown que o Gemini às vezes adiciona
+    raw = raw.replace(/^```json\s*/i, '').replace(/\s*```$/, '')
   } catch (aiErr) {
-    const errMsg = aiErr instanceof Error ? aiErr.message : String(aiErr)
-    console.error('Anthropic API error:', errMsg)
-    return NextResponse.json({ error: `[DEBUG] Anthropic: ${errMsg}` }, { status: 503 })
+    console.error('Gemini API error:', aiErr instanceof Error ? aiErr.message : String(aiErr))
+    return NextResponse.json(
+      {
+        error:
+          'Serviço de validação temporariamente indisponível. Tente novamente em alguns minutos.',
+      },
+      { status: 503 }
+    )
   }
 
   let approved = false
