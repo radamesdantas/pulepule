@@ -70,7 +70,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         { onConflict: 'teen_id,mission_id' }
       )
     if (upsertErr) {
-      return NextResponse.json({ error: 'Erro ao iniciar missão.' }, { status: 500 })
+      return NextResponse.json(
+        { error: `Erro ao iniciar missão: ${upsertErr.message} (code: ${upsertErr.code})` },
+        { status: 500 }
+      )
     }
   }
 
