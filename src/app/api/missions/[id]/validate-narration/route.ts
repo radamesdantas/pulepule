@@ -127,11 +127,9 @@ ou
     })
     raw = message.content[0].type === 'text' ? message.content[0].text.trim() : '{}'
   } catch (aiErr) {
-    console.error('Anthropic API error:', aiErr)
-    return NextResponse.json(
-      { error: 'Serviço de validação indisponível. Tente novamente em alguns segundos.' },
-      { status: 503 }
-    )
+    const errMsg = aiErr instanceof Error ? aiErr.message : String(aiErr)
+    console.error('Anthropic API error:', errMsg)
+    return NextResponse.json({ error: `[DEBUG] Anthropic: ${errMsg}` }, { status: 503 })
   }
 
   let approved = false
