@@ -94,13 +94,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const missionExample = (mission as { example?: string | null }).example
   const contextExample = missionExample || CONTEXT_EXAMPLES[mission.context] || ''
 
-  const message = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 300,
-    messages: [
-      {
-        role: 'user',
-        content: `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança. Seja encorajador e generoso: aprove sempre que o teen demonstrar que FEZ algo relacionado à missão, mesmo que a narrativa seja simples.
+  let raw: string
+  try {
+    const message = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 300,
+      messages: [
+        {
+          role: 'user',
+          content: `Você avalia narrativas de adolescentes (13-18 anos) em um programa de desenvolvimento de liderança. Seja encorajador e generoso: aprove sempre que o teen demonstrar que FEZ algo relacionado à missão, mesmo que a narrativa seja simples.
 
 Missão: ${mission.title}
 O que deveria ser feito: ${mission.description}
@@ -120,11 +122,17 @@ Responda APENAS com JSON válido, sem texto adicional:
 {"approved": true, "feedback": "Parabéns! [elogio específico e motivador em 1 frase]"}
 ou
 {"approved": false, "feedback": "[dica clara e gentil do que melhorar, máximo 2 frases]"}`,
-      },
-    ],
-  })
-
-  const raw = message.content[0].type === 'text' ? message.content[0].text.trim() : '{}'
+        },
+      ],
+    })
+    raw = message.content[0].type === 'text' ? message.content[0].text.trim() : '{}'
+  } catch (aiErr) {
+    console.error('Anthropic API error:', aiErr)
+    return NextResponse.json(
+      { error: 'Serviço de validação indisponível. Tente novamente em alguns segundos.' },
+      { status: 503 }
+    )
+  }
 
   let approved = false
   let feedback = 'Tente detalhar melhor o que você fez e como fez.'
