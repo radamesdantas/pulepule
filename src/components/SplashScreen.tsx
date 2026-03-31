@@ -20,12 +20,12 @@ export default function SplashScreen() {
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-gray-950 flex flex-col items-center justify-center transition-opacity duration-[1500ms] ${
+      className={`fixed inset-0 z-50 bg-[#5a1a2e] flex flex-col items-center justify-center transition-opacity duration-[1500ms] ${
         fading ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
       <EagleMascot width={200} height={240} animate />
-      <p className="text-gray-400 text-sm mt-8 tracking-widest uppercase animate-pulse">
+      <p className="text-rose-200/70 text-sm mt-8 tracking-widest uppercase animate-pulse">
         preparando o voo...
       </p>
     </div>
