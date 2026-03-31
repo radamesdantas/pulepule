@@ -71,7 +71,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       )
     if (upsertErr) {
       return NextResponse.json(
-        { error: `Erro ao iniciar missão: ${upsertErr.message} (code: ${upsertErr.code})` },
+        { error: 'Erro ao iniciar missão. Tente novamente.' },
         { status: 500 }
       )
     }
