@@ -20,8 +20,8 @@ const STEPS_TEEN = [
   },
   {
     icon: '⭐',
-    title: '24 Competências',
-    body: 'Ao longo da jornada você vai desenvolver 24 competências de gestão e comportamento — as mesmas usadas pelos maiores líderes do mundo.',
+    title: '12 Competências',
+    body: 'Ao longo da jornada você vai desenvolver 12 competências comportamentais — as mesmas usadas pelos maiores líderes do mundo.',
     cta: 'Que incrível!',
   },
   {

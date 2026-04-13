@@ -72,7 +72,7 @@ const makeMission = (id: string, ctx = 'family') => ({
   id,
   context: ctx,
   xp_reward: 50,
-  competency: { id: 1, name: 'Liderança', icon: '👑', category: 'management' },
+  competency: { id: 13, name: 'Iniciativa', icon: '🚀', category: 'behavioral' },
 })
 
 describe('buildBehaviors', () => {

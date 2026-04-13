@@ -54,7 +54,7 @@ export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
   return (
     <div className="relative py-4">
       {groups.map((group, groupIndex) => {
-        // ID numérico da competência extraído do competencyCode ("management-3" → 3)
+        // ID numérico da competência extraído do competencyCode ("behavioral-13" → 13)
         const competencyId = parseInt(group.competencyCode.split('-')[1] ?? '1', 10)
 
         // Águia alterna: grupos pares → esquerda, ímpares → direita

@@ -218,8 +218,8 @@ export default function Home() {
                 },
                 {
                   icon: '🌟',
-                  title: '24 Competências',
-                  desc: '12 de Gestão + 12 Comportamentais desenvolvidas ao longo de 12 meses.',
+                  title: '12 Competências',
+                  desc: '12 competências comportamentais desenvolvidas ao longo de 12 meses.',
                 },
                 {
                   icon: '🎓',
@@ -302,68 +302,33 @@ export default function Home() {
             ))}
           </div>
 
-          {/* 24 competências */}
+          {/* 12 competências */}
           <div className="bg-gray-800 rounded-3xl p-8 border border-gray-700">
             <h3 className="font-black text-white text-xl mb-6 text-center tracking-display font-outfit">
-              24 Competências Desenvolvidas
+              12 Competências Desenvolvidas
             </h3>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <div className="text-sm font-bold text-teen-purple uppercase tracking-wider mb-3">
-                  12 Competências de Gestão
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    'Liderança',
-                    'Comunicação',
-                    'Gestão Financeira',
-                    'Tomada de Decisão',
-                    'Negociação',
-                    'Organização',
-                    'Metas',
-                    'Networking',
-                    'Estratégia',
-                    'Inovação',
-                    'Planejamento',
-                    'Mentoria',
-                  ].map((c) => (
-                    <span
-                      key={c}
-                      className="bg-teen-purple/10 text-teen-purple text-xs font-semibold px-3 py-1.5 rounded-full"
-                    >
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm font-bold text-parent-blue uppercase tracking-wider mb-3">
-                  12 Competências Comportamentais
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    'Persistência',
-                    'Adaptação',
-                    'Comprometimento',
-                    'Criatividade',
-                    'Autonomia',
-                    'Riscos Calculados',
-                    'Busca por Qualidade',
-                    'Relacionamento',
-                    'Inteligência Emocional',
-                    'Visão Sistêmica',
-                    'Proatividade',
-                    'Caráter',
-                  ].map((c) => (
-                    <span
-                      key={c}
-                      className="bg-parent-blue/10 text-parent-blue text-xs font-semibold px-3 py-1.5 rounded-full"
-                    >
-                      {c}
-                    </span>
-                  ))}
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {[
+                'Iniciativa',
+                'Persistência',
+                'Coragem',
+                'Qualidade',
+                'Comprometimento',
+                'Pesquisa',
+                'Metas',
+                'Planejamento',
+                'Networking',
+                'Autoconfiança',
+                'Autorresponsabilidade',
+                'Visão',
+              ].map((c) => (
+                <span
+                  key={c}
+                  className="bg-parent-blue/10 text-parent-blue text-xs font-semibold px-3 py-1.5 rounded-full"
+                >
+                  {c}
+                </span>
+              ))}
             </div>
           </div>
         </div>
