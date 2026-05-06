@@ -1,11 +1,10 @@
 /**
- * CompetencyEagle — 24 variações da aguiazinha, uma por competência.
+ * CompetencyEagle — 12 variações da aguiazinha, uma por competência.
  * Cada aguiazinha mantém a estrutura base mas tem:
  *   – paleta de cores própria (asas, corpo)
  *   – símbolo no peito representando o tema
  *
  * IDs correspondem à ordem de inserção na migration 004:
- *   1-12  Dimensão Gerencial (CG01-CG12)
  *   13-24 Dimensão Comportamental (CC01-CC12)
  */
 
@@ -18,106 +17,9 @@ interface Theme {
   label: string // cor do label de fundo
 }
 
-// ── Paletas das 24 competências ──────────────────────────────────────────────
+// ── Paletas das 12 competências comportamentais ──────────────────────────────
 
 const THEMES: Record<number, Theme> = {
-  // Gerencial
-  1: {
-    wing1: '#92400E',
-    wing2: '#B45309',
-    wing3: '#D97706',
-    body: '#B45309',
-    crest: '#92400E',
-    label: '#78350F',
-  }, // Liderança     — âmbar/ouro
-  2: {
-    wing1: '#0E7490',
-    wing2: '#0891B2',
-    wing3: '#22D3EE',
-    body: '#0891B2',
-    crest: '#0E7490',
-    label: '#164E63',
-  }, // Comunicação   — ciano
-  3: {
-    wing1: '#9A3412',
-    wing2: '#C2410C',
-    wing3: '#F97316',
-    body: '#C2410C',
-    crest: '#9A3412',
-    label: '#7C2D12',
-  }, // Pessoas       — laranja
-  4: {
-    wing1: '#991B1B',
-    wing2: '#DC2626',
-    wing3: '#F87171',
-    body: '#DC2626',
-    crest: '#991B1B',
-    label: '#7F1D1D',
-  }, // Decisão       — vermelho
-  5: {
-    wing1: '#14532D',
-    wing2: '#16A34A',
-    wing3: '#4ADE80',
-    body: '#16A34A',
-    crest: '#14532D',
-    label: '#052E16',
-  }, // Finanças      — verde
-  6: {
-    wing1: '#1E3A5F',
-    wing2: '#1D4ED8',
-    wing3: '#60A5FA',
-    body: '#1D4ED8',
-    crest: '#1E3A5F',
-    label: '#1E3A5F',
-  }, // Processos     — azul aço
-  7: {
-    wing1: '#581C87',
-    wing2: '#7E22CE',
-    wing3: '#C084FC',
-    body: '#7E22CE',
-    crest: '#581C87',
-    label: '#3B0764',
-  }, // Negociação    — violeta
-  8: {
-    wing1: '#134E4A',
-    wing2: '#0D9488',
-    wing3: '#2DD4BF',
-    body: '#0D9488',
-    crest: '#134E4A',
-    label: '#042F2E',
-  }, // Mudanças      — verde-água
-  9: {
-    wing1: '#713F12',
-    wing2: '#CA8A04',
-    wing3: '#FDE047',
-    body: '#CA8A04',
-    crest: '#713F12',
-    label: '#422006',
-  }, // Inovação      — amarelo
-  10: {
-    wing1: '#1E3A5F',
-    wing2: '#2563EB',
-    wing3: '#93C5FD',
-    body: '#2563EB',
-    crest: '#1E3A5F',
-    label: '#1E40AF',
-  }, // Resultado     — azul
-  11: {
-    wing1: '#44403C',
-    wing2: '#78716C',
-    wing3: '#D6D3D1',
-    body: '#78716C',
-    crest: '#44403C',
-    label: '#292524',
-  }, // Cultura       — pedra/marrom
-  12: {
-    wing1: '#3B0764',
-    wing2: '#6D28D9',
-    wing3: '#A78BFA',
-    body: '#6D28D9',
-    crest: '#3B0764',
-    label: '#2E1065',
-  }, // Sucessão      — púrpura real
   // Comportamental
   13: {
     wing1: '#7C2D12',
@@ -230,142 +132,6 @@ function ChestSymbol({ id }: { id: number }) {
   }
 
   switch (id) {
-    case 1: // Liderança — coroa
-      return <path d="M52 88 L52 82 L56 73 L60 79 L64 73 L68 82 L68 88 Z" fill={w} opacity="0.9" />
-    case 2: // Comunicação — balão de fala
-      return (
-        <>
-          <ellipse cx="60" cy="77" rx="8" ry="6" fill={w} opacity="0.9" />
-          <path d="M56 83 L54 89 L61 84" fill={w} opacity="0.9" />
-        </>
-      )
-    case 3: // Pessoas — dois círculos (pessoas)
-      return (
-        <>
-          <circle cx="55" cy="76" r="3.5" fill={w} opacity="0.9" />
-          <circle cx="65" cy="76" r="3.5" fill={w} opacity="0.9" />
-          <path d="M49 88 Q54 82 60 84 Q66 82 71 88" {...s} opacity="0.9" />
-        </>
-      )
-    case 4: // Decisão — mira
-      return (
-        <>
-          <circle cx="60" cy="80" r="8" {...s} opacity="0.9" />
-          <circle cx="60" cy="80" r="3" fill={w} opacity="0.9" />
-          <line x1="60" y1="70" x2="60" y2="74" stroke={w} strokeWidth="1.8" />
-          <line x1="60" y1="86" x2="60" y2="90" stroke={w} strokeWidth="1.8" />
-          <line x1="50" y1="80" x2="54" y2="80" stroke={w} strokeWidth="1.8" />
-          <line x1="66" y1="80" x2="70" y2="80" stroke={w} strokeWidth="1.8" />
-        </>
-      )
-    case 5: // Finanças — moeda com cifrão
-      return (
-        <>
-          <circle cx="60" cy="80" r="8" {...s} opacity="0.9" />
-          <line
-            x1="60"
-            y1="71"
-            x2="60"
-            y2="89"
-            stroke={w}
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
-          <path
-            d="M57 74 Q52 74 53 77.5 Q54 81 60 81.5 Q67 82 66 85.5 Q65 89 57 88.5"
-            {...s}
-            opacity="0.9"
-          />
-        </>
-      )
-    case 6: // Processos — engrenagem (simplificada)
-      return (
-        <>
-          <circle cx="60" cy="80" r="5" {...s} opacity="0.9" />
-          {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => {
-            const rad = (deg * Math.PI) / 180
-            const x1 = 60 + 7 * Math.cos(rad),
-              y1 = 80 + 7 * Math.sin(rad)
-            const x2 = 60 + 10 * Math.cos(rad),
-              y2 = 80 + 10 * Math.sin(rad)
-            return (
-              <line
-                key={i}
-                x1={x1}
-                y1={y1}
-                x2={x2}
-                y2={y2}
-                stroke={w}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-            )
-          })}
-        </>
-      )
-    case 7: // Negociação — dois círculos ligados
-      return (
-        <>
-          <circle cx="55" cy="80" r="5" {...s} opacity="0.9" />
-          <circle cx="65" cy="80" r="5" {...s} opacity="0.9" />
-          <line
-            x1="55"
-            y1="70"
-            x2="65"
-            y2="70"
-            stroke={w}
-            strokeWidth="1.5"
-            strokeDasharray="2 2"
-          />
-        </>
-      )
-    case 8: // Mudanças — seta circular
-      return (
-        <>
-          <path d="M52 76 A9 9 0 1 1 60 89" {...s} opacity="0.9" />
-          <path d="M58 85 L61 90 L55 90 Z" fill={w} opacity="0.9" />
-        </>
-      )
-    case 9: // Inovação — lâmpada
-      return (
-        <>
-          <path
-            d="M60 70 C54 70 51 75 51 79 C51 83 54 86 57 87 L57 90 L63 90 L63 87 C66 86 69 83 69 79 C69 75 66 70 60 70 Z"
-            fill={w}
-            opacity="0.9"
-          />
-          <line x1="57" y1="90" x2="63" y2="90" stroke={w} strokeWidth="1.5" />
-          <line x1="57.5" y1="92" x2="62.5" y2="92" stroke={w} strokeWidth="1.5" />
-        </>
-      )
-    case 10: // Resultado — barras ascendentes
-      return (
-        <>
-          <rect x="50" y="84" width="5" height="5" fill={w} opacity="0.9" />
-          <rect x="57" y="79" width="5" height="10" fill={w} opacity="0.9" />
-          <rect x="64" y="73" width="5" height="16" fill={w} opacity="0.9" />
-          <line x1="48" y1="89" x2="71" y2="89" stroke={w} strokeWidth="1.5" />
-        </>
-      )
-    case 11: // Cultura — colunas
-      return (
-        <>
-          <rect x="50" y="78" width="4" height="11" fill={w} opacity="0.9" />
-          <rect x="58" y="76" width="4" height="13" fill={w} opacity="0.9" />
-          <rect x="66" y="78" width="4" height="11" fill={w} opacity="0.9" />
-          <line x1="48" y1="78" x2="72" y2="78" stroke={w} strokeWidth="1.8" />
-          <line x1="48" y1="89" x2="72" y2="89" stroke={w} strokeWidth="1.8" />
-        </>
-      )
-    case 12: // Sucessão — coroa com estrela
-      return (
-        <>
-          <path d="M52 88 L52 82 L56 73 L60 79 L64 73 L68 82 L68 88 Z" fill={w} opacity="0.9" />
-          <circle cx="60" cy="71" r="2.5" fill="#FDE047" opacity="0.9" />
-          <circle cx="53" cy="74" r="2" fill="#FDE047" opacity="0.7" />
-          <circle cx="67" cy="74" r="2" fill="#FDE047" opacity="0.7" />
-        </>
-      )
     case 13: // Iniciativa — foguete
       return (
         <>
@@ -552,7 +318,7 @@ interface Props {
 }
 
 export default function CompetencyEagle({ competencyId, competencyName, size = 80 }: Props) {
-  const t = THEMES[competencyId] ?? THEMES[1]
+  const t = THEMES[competencyId] ?? THEMES[13]
   const h = Math.round(size * 1.2)
 
   return (

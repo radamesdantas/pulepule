@@ -96,7 +96,7 @@ export default async function JourneyPage() {
       <div>
         <h1 className="text-2xl font-black text-gray-800">Sua Jornada 🗺️</h1>
         <p className="text-gray-500 text-sm mt-1">
-          12 meses, 4 fases, 24 competências — sua trilha completa de liderança
+          12 meses, 4 fases, 12 competências — sua trilha completa de liderança
         </p>
       </div>
 
