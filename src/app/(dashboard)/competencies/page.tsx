@@ -28,7 +28,7 @@ export default async function CompetenciesPage() {
     .from('competencies')
     .select('*')
     .order('phase')
-    .order('category')
+    .order('id')
 
   const { data: xp } = await supabase
     .from('teen_xp')
@@ -46,8 +46,10 @@ export default async function CompetenciesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-black text-gray-800">24 Competências ⭐</h1>
-        <p className="text-gray-500 text-sm mt-1">Sua jornada de liderança completa em 12 meses</p>
+        <h1 className="text-2xl font-black text-gray-800">12 Competências ⭐</h1>
+        <p className="text-gray-500 text-sm mt-1">
+          Sua jornada de liderança em 12 meses — 36 comportamentos
+        </p>
       </div>
 
       {[1, 2, 3, 4].map((phase) => {
@@ -85,14 +87,8 @@ export default async function CompetenciesPage() {
                         </span>
                       </div>
                       <p className="text-xs text-gray-500 mt-0.5">{comp!.description}</p>
-                      <span
-                        className={`mt-2 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                          comp!.category === 'management'
-                            ? 'bg-purple-50 text-teen-purple'
-                            : 'bg-blue-50 text-parent-blue'
-                        }`}
-                      >
-                        {comp!.category === 'management' ? 'Gestão' : 'Comportamental'}
+                      <span className="mt-2 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-50 text-teen-purple">
+                        Comportamental
                       </span>
                     </div>
                   </div>

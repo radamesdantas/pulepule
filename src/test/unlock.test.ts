@@ -39,6 +39,11 @@ describe('resolveBehaviorStatus', () => {
     expect(resolveBehaviorStatus(tm, 1, undefined)).toBe('in_progress')
   })
 
+  it('missão com status pending → available (tem teen_mission mas ainda não iniciou de fato)', () => {
+    const tm: TeenMissionInput = { mission_id: 'x', status: 'pending' }
+    expect(resolveBehaviorStatus(tm, 1, undefined)).toBe('available')
+  })
+
   it('missão sem teen_mission e anterior approved → available', () => {
     const prev: TeenMissionInput = { mission_id: 'prev', status: 'approved' }
     expect(resolveBehaviorStatus(undefined, 1, prev)).toBe('available')
@@ -68,11 +73,11 @@ describe('resolveBehaviorStatus', () => {
 
 // ── buildBehaviors ────────────────────────────────────────────────────────────
 
-const makeMission = (id: string, ctx = 'family') => ({
+const makeMission = (id: string, ctx = 'pessoal') => ({
   id,
   context: ctx,
   xp_reward: 50,
-  competency: { id: 1, name: 'Liderança', icon: '👑', category: 'management' },
+  competency: { id: 1, name: 'Iniciativa', icon: '🚀', category: 'behavioral' },
 })
 
 describe('buildBehaviors', () => {
@@ -146,17 +151,39 @@ describe('buildBehaviors', () => {
   })
 
   it('usa exemplo do contexto quando disponível', () => {
-    const missions = [makeMission('m1', 'school')]
-    const examples = { school: 'Faça algo na escola', default: 'Genérico' }
+    const missions = [makeMission('m1', 'escola')]
+    const examples = { escola: 'Faça algo na escola', default: 'Genérico' }
     const result = buildBehaviors(missions, [], examples)
     expect(result[0].example).toBe('Faça algo na escola')
   })
 
   it('fallback para exemplo default quando contexto não tem exemplo', () => {
-    const missions = [makeMission('m1', 'community')]
+    const missions = [makeMission('m1', 'amigos')]
     const examples = { default: 'Genérico' }
     const result = buildBehaviors(missions, [], examples)
     expect(result[0].example).toBe('Genérico')
+  })
+
+  it('competency como array → usa primeiro elemento', () => {
+    const mission = {
+      id: 'm1',
+      context: 'pessoal',
+      xp_reward: 50,
+      competency: [{ id: 1, name: 'Iniciativa', icon: '🚀', category: 'behavioral' }],
+    } as unknown as import('@/lib/utils/unlock').MissionInput
+    const result = buildBehaviors([mission], [], {})
+    expect(result[0].competencyCode).toBe('behavioral-1')
+  })
+
+  it('competency null → competencyCode usa fallback unknown-{index}', () => {
+    const mission = {
+      id: 'm1',
+      context: 'family',
+      xp_reward: 50,
+      competency: null,
+    }
+    const result = buildBehaviors([mission], [], {})
+    expect(result[0].competencyCode).toBe('unknown-0')
   })
 })
 

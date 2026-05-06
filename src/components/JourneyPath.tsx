@@ -15,8 +15,16 @@ interface Behavior {
   index: number
 }
 
-function NodeConnector() {
-  return <div className="w-0.5 h-8 bg-gradient-to-b from-gray-700 to-gray-800 mx-auto" />
+function NodeConnector({ completed }: { completed?: boolean }) {
+  return (
+    <div
+      className={`w-px h-8 mx-auto ${
+        completed
+          ? 'bg-gradient-to-b from-level-up/60 to-level-up/20'
+          : 'bg-gradient-to-b from-teen-purple/40 to-teen-purple/10'
+      }`}
+    />
+  )
 }
 
 interface Props {
@@ -54,7 +62,7 @@ export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
   return (
     <div className="relative py-4">
       {groups.map((group, groupIndex) => {
-        // ID numérico da competência extraído do competencyCode ("management-3" → 3)
+        // ID numérico da competência extraído do competencyCode ("behavioral-3" → 3)
         const competencyId = parseInt(group.competencyCode.split('-')[1] ?? '1', 10)
 
         // Águia alterna: grupos pares → esquerda, ímpares → direita
@@ -116,13 +124,6 @@ export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
                       </span>
                     </>
                   )}
-
-                  {/* XP badge */}
-                  {behavior.status !== 'locked' && (
-                    <span className="absolute -bottom-1 -right-1 bg-xp-gold text-white text-[11px] font-black rounded-full px-1.5 py-0.5 shadow">
-                      +{behavior.xpReward}
-                    </span>
-                  )}
                 </button>
 
                 {/* Título */}
@@ -136,7 +137,9 @@ export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
               </div>
 
               {/* Conector (exceto no último do grupo) */}
-              {itemIndex < group.items.length - 1 && <NodeConnector />}
+              {itemIndex < group.items.length - 1 && (
+                <NodeConnector completed={behavior.status === 'completed'} />
+              )}
             </div>
           )
         })
@@ -159,12 +162,11 @@ export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
               />
             </div>
 
-            {/* Linha divisória com numeração */}
+            {/* Linha divisória */}
             <div className="flex items-center gap-3 mb-6 px-2">
               <div className="h-px bg-gray-800 flex-1" />
-              <span className="text-gray-600 text-[11px] font-mono tracking-widest uppercase">
-                {group.competencyName} · {group.items[0]?.number}–
-                {group.items[group.items.length - 1]?.number}
+              <span className="text-gray-500 text-[10px] font-semibold tracking-widest uppercase">
+                {group.competencyName}
               </span>
               <div className="h-px bg-gray-800 flex-1" />
             </div>

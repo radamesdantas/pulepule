@@ -1,9 +1,15 @@
-export type UserRole = 'teen' | 'parent' | 'mentor'
+export type UserRole = 'teen' | 'parent' | 'mentor' | 'admin'
 export type MissionStatus = 'pending' | 'in_progress' | 'submitted' | 'approved' | 'rejected'
-export type CompetencyCategory = 'management' | 'behavioral'
-export type MissionContext = 'family' | 'school' | 'community' | 'company'
+export type CompetencyCategory = 'behavioral'
+export type MissionContext = 'escola' | 'familia' | 'amigos' | 'casa' | 'pessoal'
 export type JourneyPhase = 1 | 2 | 3 | 4
-export type NotificationType = 'mission_approved' | 'mission_rejected' | 'xp_gained' | 'level_up' | 'badge_earned' | 'new_mission'
+export type NotificationType =
+  | 'mission_approved'
+  | 'mission_rejected'
+  | 'xp_gained'
+  | 'level_up'
+  | 'badge_earned'
+  | 'new_mission'
 
 export interface Database {
   public: {
