@@ -10,10 +10,10 @@ interface Props {
 }
 
 const NAV_TEEN = [
-  { href: '/teen', label: 'Início', icon: '🏠' },
-  { href: '/missions', label: 'Missões', icon: '🎯' },
+  { href: '/teen', label: 'Inicio', icon: '🏠' },
+  { href: '/missions', label: 'Missoes', icon: '🎯' },
+  { href: '/meetings', label: 'Reuniao', icon: '👨‍👩‍👦' },
   { href: '/leaderboard', label: 'Ranking', icon: '🏆' },
-  { href: '/journey', label: 'Jornada', icon: '🗺️' },
   { href: '/notifications', label: 'Avisos', icon: '🔔' },
 ]
 
@@ -34,31 +34,36 @@ export default function MobileNav({ profile, unread = 0 }: Props) {
   const pathname = usePathname()
 
   const navItems =
-    profile.role === 'teen' ? NAV_TEEN :
-    profile.role === 'parent' ? NAV_PARENT :
-    NAV_MENTOR
+    profile.role === 'teen' ? NAV_TEEN : profile.role === 'parent' ? NAV_PARENT : NAV_MENTOR
 
   return (
-    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-lg">
-      <div className="flex items-center justify-around px-2 py-1">
-        {navItems.map(item => {
-          const isActive = pathname === item.href
+    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-gray-100 shadow-lg safe-area-bottom">
+      <div className="flex items-center justify-around px-1 py-1 pb-safe">
+        {navItems.map((item) => {
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/teen' &&
+              item.href !== '/parent' &&
+              item.href !== '/mentor' &&
+              pathname.startsWith(item.href))
           const isNotif = item.href === '/notifications'
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors relative ${
+              className={`flex flex-col items-center gap-0.5 min-w-[44px] min-h-[44px] px-2 py-2 rounded-xl transition-colors relative justify-center ${
                 isActive ? 'text-teen-purple' : 'text-gray-400'
               }`}
             >
               <span className="text-xl leading-none">{item.icon}</span>
               {isNotif && unread > 0 && (
-                <span className="absolute top-1 right-1 bg-red-500 text-white text-[9px] font-black rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
+                <span className="absolute top-1 right-0.5 bg-red-500 text-white text-[9px] font-black rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
                   {unread > 9 ? '9+' : unread}
                 </span>
               )}
-              <span className={`text-[10px] font-semibold ${isActive ? 'text-teen-purple' : 'text-gray-400'}`}>
+              <span
+                className={`text-[10px] font-semibold ${isActive ? 'text-teen-purple' : 'text-gray-400'}`}
+              >
                 {item.label}
               </span>
               {isActive && (

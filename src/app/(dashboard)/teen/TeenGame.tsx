@@ -8,6 +8,7 @@ import { buildBehaviors } from '@/lib/utils/unlock'
 
 const LEVEL_NAMES = ['Explorador', 'Aprendiz', 'Guerreiro', 'Herói', 'Lenda']
 const XP_PER_LEVEL = 500
+const STREAK_MILESTONES = [7, 30, 100, 267]
 
 const EXAMPLES: Record<string, string> = {
   // Exemplos por contexto — fallback genérico
@@ -108,7 +109,7 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
             </div>
             <div className="text-center">
               <p className="text-orange-400 font-black text-lg">{streak}</p>
-              <p className="text-gray-500 text-xs">🔥 Dias</p>
+              <p className="text-gray-500 text-xs">🔥 streak</p>
             </div>
           </div>
         </div>
@@ -125,6 +126,27 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
             {totalXp % XP_PER_LEVEL}/{XP_PER_LEVEL} XP para o próximo nível
           </p>
         </div>
+
+        {/* Streak milestones */}
+        {streak > 0 && (
+          <div className="mt-2 flex items-center gap-1.5">
+            {STREAK_MILESTONES.map((m) => (
+              <div
+                key={m}
+                className={`flex-1 flex flex-col items-center py-1 rounded-lg ${
+                  streak >= m ? 'bg-orange-500/20' : 'bg-gray-800/50'
+                }`}
+              >
+                <span className="text-xs">{streak >= m ? '🔥' : '○'}</span>
+                <span
+                  className={`text-[9px] font-bold ${streak >= m ? 'text-orange-400' : 'text-gray-600'}`}
+                >
+                  {m}d
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Journey path */}

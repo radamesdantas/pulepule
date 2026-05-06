@@ -1,4 +1,6 @@
 export type UserRole = 'teen' | 'parent' | 'mentor' | 'admin'
+export type MeetingType = 'weekly' | 'monthly'
+export type BadgeRarity = 'bronze' | 'silver' | 'gold' | 'diamond'
 export type MissionStatus = 'pending' | 'in_progress' | 'submitted' | 'approved' | 'rejected'
 export type CompetencyCategory = 'behavioral'
 export type MissionContext = 'escola' | 'familia' | 'amigos' | 'casa' | 'pessoal'
@@ -129,4 +131,26 @@ export interface Notification {
   message: string
   read: boolean
   created_at: string
+}
+
+export interface FamilyMeeting {
+  id: string
+  teen_id: string
+  recorded_by: string
+  meeting_type: MeetingType
+  meeting_date: string
+  duration_minutes: number
+  topic: string | null
+  notes: string | null
+  created_at: string
+}
+
+export interface BadgeDefinition {
+  code: string
+  name: string
+  description: string
+  icon: string
+  rarity: BadgeRarity
+  criteria: string
+  sort_order: number
 }

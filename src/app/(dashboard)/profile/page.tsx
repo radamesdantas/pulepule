@@ -2,6 +2,20 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ProfileForm from './ProfileForm'
 
+const RARITY_STYLE: Record<string, string> = {
+  bronze: 'border-amber-600 bg-amber-950/40',
+  silver: 'border-gray-400 bg-gray-800/60',
+  gold: 'border-yellow-400 bg-yellow-950/40',
+  diamond: 'border-cyan-400 bg-cyan-950/40',
+}
+
+const RARITY_LABEL: Record<string, string> = {
+  bronze: 'Bronze',
+  silver: 'Prata',
+  gold: 'Ouro',
+  diamond: 'Diamante',
+}
+
 export default async function ProfilePage() {
   const supabase = await createClient()
   const {
@@ -11,15 +25,22 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
 
-  // Perfil pode ser null se o trigger de criação falhou — redireciona para onboarding
   if (!profile) redirect('/onboarding')
 
   const role = profile.role ?? user.user_metadata?.role ?? 'teen'
 
-  const { data: xp } =
+  const [xpResult, badgesResult] = await Promise.all([
     role === 'teen'
-      ? await supabase.from('teen_xp').select('*').eq('teen_id', user.id).single()
-      : { data: null }
+      ? supabase.from('teen_xp').select('*').eq('teen_id', user.id).single()
+      : { data: null },
+    role === 'teen'
+      ? supabase.from('badge_definitions').select('*').order('sort_order')
+      : { data: null },
+  ])
+
+  const xp = xpResult.data
+  const badgeDefs = badgesResult.data ?? []
+  const earnedBadges = new Set<string>(xp?.badges ?? [])
 
   return (
     <div className="max-w-lg mx-auto space-y-6 px-4 py-6">
@@ -54,6 +75,48 @@ export default async function ProfilePage() {
           </div>
         )}
       </div>
+
+      {/* Badge gallery — apenas para teens */}
+      {role === 'teen' && badgeDefs.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-black text-white">Conquistas</h2>
+            <span className="text-xs text-gray-400 font-semibold">
+              {earnedBadges.size}/{badgeDefs.length} desbloqueadas
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {badgeDefs.map((badge) => {
+              const earned = earnedBadges.has(badge.code)
+              return (
+                <div
+                  key={badge.code}
+                  className={`rounded-2xl border-2 p-3 flex flex-col items-center gap-1 text-center transition-all ${
+                    earned
+                      ? RARITY_STYLE[badge.rarity]
+                      : 'border-gray-800 bg-gray-900/50 opacity-40'
+                  }`}
+                  title={earned ? badge.criteria : 'Bloqueado'}
+                >
+                  <span className={`text-2xl leading-none ${earned ? '' : 'grayscale'}`}>
+                    {badge.icon}
+                  </span>
+                  <p
+                    className={`text-[10px] font-bold leading-tight ${earned ? 'text-white' : 'text-gray-500'}`}
+                  >
+                    {badge.name}
+                  </p>
+                  {earned && (
+                    <span className="text-[9px] font-semibold uppercase tracking-wide text-gray-400">
+                      {RARITY_LABEL[badge.rarity]}
+                    </span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       <ProfileForm profile={profile} />
     </div>
