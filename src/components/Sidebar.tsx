@@ -22,12 +22,14 @@ const NAV_TEEN = [
 const NAV_PARENT = [
   { href: '/parent', label: 'Dashboard', icon: '🏠' },
   { href: '/link', label: 'Vincular', icon: '🔗' },
+  { href: '/report', label: 'Relatório', icon: '📊' },
   { href: '/notifications', label: 'Avisos', icon: '🔔' },
   { href: '/profile', label: 'Perfil', icon: '👤' },
 ]
 
 const NAV_MENTOR = [
   { href: '/mentor', label: 'Dashboard', icon: '🏠' },
+  { href: '/report', label: 'Relatório', icon: '📊' },
   { href: '/notifications', label: 'Avisos', icon: '🔔' },
   { href: '/profile', label: 'Perfil', icon: '👤' },
 ]
