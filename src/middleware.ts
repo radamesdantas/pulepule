@@ -8,6 +8,9 @@ const PUBLIC_PATHS = [
   '/auth/reset-password',
   '/auth/update-password',
   '/auth/callback',
+  '/contato',
+  '/privacidade',
+  '/termos',
 ]
 
 export async function middleware(request: NextRequest) {
