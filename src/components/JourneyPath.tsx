@@ -90,13 +90,13 @@ export default function JourneyPath({ behaviors, onSelectBehavior }: Props) {
                 <button
                   onClick={() => behavior.status !== 'locked' && onSelectBehavior(behavior.id)}
                   disabled={behavior.status === 'locked'}
-                  className={`relative w-16 h-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg ${
+                  className={`relative w-16 h-16 rounded-full flex flex-col items-center justify-center transition-all shadow-lg select-none ${
                     behavior.status === 'completed'
-                      ? 'bg-level-up text-white shadow-level-up/30'
+                      ? 'bg-level-up text-white shadow-level-up/30 active:scale-95'
                       : behavior.status === 'in_progress'
-                        ? 'bg-parent-blue text-white shadow-parent-blue/30 ring-4 ring-parent-blue/30 animate-pulse'
+                        ? 'bg-parent-blue text-white shadow-parent-blue/30 ring-4 ring-parent-blue/30 animate-pulse active:scale-95'
                         : behavior.status === 'available'
-                          ? 'bg-teen-purple text-white shadow-teen-purple/40 hover:scale-110 cursor-pointer ring-4 ring-teen-purple/20'
+                          ? 'bg-teen-purple text-white shadow-teen-purple/40 hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-teen-purple/20'
                           : 'bg-gray-800 text-gray-600 cursor-not-allowed opacity-40 border border-gray-700'
                   }`}
                 >

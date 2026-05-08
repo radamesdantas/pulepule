@@ -129,7 +129,7 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors ${
+                className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors select-none active:scale-95 ${
                   isActive ? 'text-teen-purple' : 'text-gray-500'
                 }`}
               >
@@ -141,7 +141,7 @@ export default function Sidebar({ role, name, unread = 0 }: Props) {
           {/* Logout */}
           <button
             onClick={handleSignOut}
-            className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors text-gray-500 hover:text-red-400"
+            className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-colors text-gray-500 hover:text-red-400 select-none active:scale-95"
           >
             <span className="text-xl">🚪</span>
             <span className="text-[10px] font-semibold">Sair</span>

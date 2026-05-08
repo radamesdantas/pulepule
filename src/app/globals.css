@@ -146,3 +146,28 @@
     letter-spacing: -0.025em;
   }
 }
+
+/* ── Mobile touch optimizations ─────────────────────────────── */
+
+/* Remove tap highlight azul/cinza do browser nativo */
+button,
+a,
+[role='button'],
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Elimina delay de 300ms em cliques — torna o app responsivo como nativo */
+button,
+a,
+[role='button'] {
+  touch-action: manipulation;
+}
+
+/* Impede rubber-band scroll vertical (efeito "elástico") fora do conteúdo */
+html,
+body {
+  overscroll-behavior-y: none;
+}
