@@ -1,12 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-
-const LEVEL_NAMES = ['Explorador', 'Aprendiz', 'Guerreiro', 'Herói', 'Lenda']
-const PHASE_LABELS = ['', 'Descoberta', 'Desenvolvimento', 'Liderança', 'Legado']
-
-function getLevelName(level: number) {
-  return LEVEL_NAMES[Math.min(level - 1, LEVEL_NAMES.length - 1)]
-}
+import { getLevelName, PHASE_LABELS } from '@/lib/constants/game'
 
 const MEDALS = ['🥇', '🥈', '🥉']
 

@@ -1,15 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import PrintButton from './PrintButton'
-
-const LEVEL_NAMES = ['Explorador', 'Aprendiz', 'Guerreiro', 'Herói', 'Lenda']
-
-const PHASE_NAMES: Record<number, string> = {
-  1: 'Descoberta',
-  2: 'Experimentação',
-  3: 'Crescimento',
-  4: 'Liderança',
-}
+import { getLevelName, PHASE_LABELS } from '@/lib/constants/game'
 
 export default async function ReportPage() {
   const supabase = await createClient()
@@ -98,11 +90,11 @@ export default async function ReportPage() {
   const inProgress = allMissions.filter((m) => m.status === 'in_progress')
   const totalXp = xp?.total_xp ?? 0
   const level = xp?.current_level ?? 1
-  const levelName = LEVEL_NAMES[Math.min(level - 1, LEVEL_NAMES.length - 1)]
+  const levelName = getLevelName(level)
   const autonomy = xp?.autonomy_index ?? 0
   const badges = xp?.badges ?? []
   const currentPhase = xp?.current_phase ?? 1
-  const phaseName = PHASE_NAMES[currentPhase] ?? 'Descoberta'
+  const phaseName = PHASE_LABELS[currentPhase] ?? 'Descoberta'
 
   // Competências com progresso
   const competencyProgress = competencies.map((comp) => {

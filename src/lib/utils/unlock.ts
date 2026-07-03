@@ -1,4 +1,12 @@
 import type { MissionStatus } from '@/lib/types/database'
+export {
+  calculateLevel,
+  getLevelName,
+  LEVEL_NAMES,
+  PHASE_LABELS,
+  STREAK_MILESTONES,
+  XP_PER_LEVEL,
+} from '@/lib/constants/game'
 
 export type BehaviorStatus = 'locked' | 'available' | 'in_progress' | 'completed'
 
@@ -58,9 +66,7 @@ export function buildBehaviors(
   })
 }
 
-export function calculateLevel(totalXp: number): number {
-  return Math.floor(totalXp / 500) + 1
-}
+// calculateLevel re-exported from @/lib/constants/game via the re-export above
 
 export function calculateNewXp(currentXp: number, reward: number): number {
   return currentXp + reward

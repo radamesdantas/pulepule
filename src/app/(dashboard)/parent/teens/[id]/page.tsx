@@ -2,12 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 
-const PHASE_LABELS = ['', 'Descoberta', 'Desenvolvimento', 'Liderança', 'Legado']
-const LEVEL_NAMES = ['Explorador', 'Aprendiz', 'Guerreiro', 'Herói', 'Lenda']
-
-function getLevelName(level: number) {
-  return LEVEL_NAMES[Math.min(level - 1, LEVEL_NAMES.length - 1)]
-}
+import { getLevelName, PHASE_LABELS } from '@/lib/constants/game'
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   pending: { label: 'Pendente', color: 'bg-gray-100 text-gray-600' },

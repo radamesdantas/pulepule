@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { calculateLevel } from '@/lib/constants/game'
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: teenMissionId } = await params
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) return NextResponse.redirect(new URL('/auth/login', req.url))
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
   if (!profile || profile.role !== 'mentor') {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })
   }
@@ -43,7 +47,7 @@ export async function POST(
 
   if (currentXp) {
     const newTotal = (currentXp.total_xp ?? 0) + xpReward
-    const newLevel = Math.floor(newTotal / 500) + 1
+    const newLevel = calculateLevel(newTotal)
     const newAutonomy = Math.min(100, (currentXp.autonomy_index ?? 0) + 2)
 
     await supabase

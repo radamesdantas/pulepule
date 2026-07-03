@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { PHASE_LABELS } from '@/lib/constants/game'
 
 export default async function ParentDashboard() {
   const supabase = await createClient()
@@ -61,8 +62,6 @@ export default async function ParentDashboard() {
               const xp = x?.total_xp ?? 0
               const phase = x?.current_phase ?? 1
               const streak = x?.current_streak ?? 0
-              const PHASE_LABELS = ['', 'Descoberta', 'Desenvolvimento', 'Liderança', 'Legado']
-
               return (
                 <div
                   key={teen.id}

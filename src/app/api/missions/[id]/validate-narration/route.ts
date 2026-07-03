@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import Groq from 'groq-sdk'
+import { calculateLevel } from '@/lib/constants/game'
 
 const CONTEXT_EXAMPLES: Record<string, string> = {
   escola:
@@ -179,7 +180,7 @@ ou
 
     if (currentXp) {
       const newTotal = (currentXp.total_xp ?? 0) + mission.xp_reward
-      const newLevel = Math.floor(newTotal / 500) + 1
+      const newLevel = calculateLevel(newTotal)
       const newAutonomy = Math.min(100, (currentXp.autonomy_index ?? 0) + 2)
 
       await supabase

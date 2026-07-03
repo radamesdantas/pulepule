@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation'
 import JourneyPath from '@/components/JourneyPath'
 import BehaviorModal from '@/components/BehaviorModal'
 import { buildBehaviors } from '@/lib/utils/unlock'
-
-const LEVEL_NAMES = ['Explorador', 'Aprendiz', 'Guerreiro', 'Herói', 'Lenda']
-const XP_PER_LEVEL = 500
-const STREAK_MILESTONES = [7, 30, 100, 267]
+import { getLevelName, XP_PER_LEVEL, STREAK_MILESTONES } from '@/lib/constants/game'
 
 const EXAMPLES: Record<string, string> = {
   // Exemplos por contexto — fallback genérico
@@ -99,7 +96,7 @@ export default function TeenGame({ userId, name, xp, missions, teenMissions }: P
           <div>
             <p className="text-gray-400 text-xs">Olá, {name.split(' ')[0]}</p>
             <p className="text-white font-black text-lg tracking-display font-outfit">
-              {LEVEL_NAMES[Math.min(level - 1, LEVEL_NAMES.length - 1)]} — Nível {level}
+              {getLevelName(level)} — Nível {level}
             </p>
           </div>
           <div className="flex items-center gap-4">
